@@ -1,184 +1,437 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Nunito:wght@400;600;700;800&display=swap");
 
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
+* {
+  box-sizing: border-box;
 }
 
-.hero {
-  position: relative;
-
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
 }
 
-#center {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  place-content: center;
+button {
+  font: inherit;
+}
+
+.boot-screen {
+  min-height: 100vh;
+  display: grid;
   place-items: center;
-  flex-grow: 1;
+  padding: 24px;
 
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
+  background:
+    radial-gradient(circle at 20% 20%, #59406f 0 2px, transparent 3px),
+    radial-gradient(circle at 80% 30%, #f6c8d8 0 1px, transparent 2px),
+    radial-gradient(circle at 35% 75%, #f5d98d 0 2px, transparent 3px),
+    linear-gradient(145deg, #171126, #291b38 55%, #402449);
+
+  color: #fff7ef;
+  font-family: "Nunito", sans-serif;
+  overflow: hidden;
 }
 
-#next-steps {
+.boot-card {
+  width: min(620px, 100%);
+  padding: 56px 42px;
+  text-align: center;
+
+  background: rgba(25, 18, 39, 0.88);
+  border: 2px solid rgba(255, 220, 194, 0.35);
+  border-radius: 24px;
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.4),
+    inset 0 0 40px rgba(255, 213, 180, 0.04);
+}
+
+.boot-stars {
+  color: #f5d98d;
+  font-size: 22px;
+  letter-spacing: 12px;
+  margin-bottom: 28px;
+}
+
+.boot-label {
+  margin: 0 0 14px;
+  font-family: "DM Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: #e8b7ca;
+}
+
+.boot-card h1 {
+  margin: 0;
+  font-family: "DM Mono", monospace;
+  font-size: clamp(30px, 7vw, 56px);
+  letter-spacing: -2px;
+  color: #fff3dc;
+}
+
+.boot-subtitle {
+  margin: 14px 0 0;
+  font-size: 18px;
+  color: #f5d98d;
+}
+
+.boot-divider {
+  width: 80px;
+  height: 2px;
+  margin: 30px auto;
+
+  background: #e8b7ca;
+}
+
+.boot-message {
+  margin-bottom: 28px;
+  color: #d9ccda;
+}
+
+.dream-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 14px 26px;
+
+  background: #e8b7ca;
+  color: #291b38;
+
+  font-weight: 800;
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dream-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(232, 183, 202, 0.3);
+}
+
+.dream-button:active {
+  transform: translateY(0);
+}
+
+.boot-hint {
+  margin: 20px 0 0;
+  font-family: "DM Mono", monospace;
+  font-size: 11px;
+  color: #9e8da7;
+}
+
+.desktop {
+  min-height: 100vh;
+  padding: 60px 24px;
+  background: #f8eddf;
+  color: #291b38;
+  font-family: "Nunito", sans-serif;
+  text-align: center;
+}
+
+.desktop h1 {
+  font-size: clamp(28px, 6vw, 52px);
+}
+
+/* =========================
+   PIP DREAM DESKTOP
+   ========================= */
+
+.desktop {
+  min-height: 100vh;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 50% 20%, #4a315c 0, transparent 35%),
+    linear-gradient(160deg, #171126, #261831 55%, #321d3b);
+  color: #fff7ef;
+  overflow: hidden;
+}
+
+.desktop-header {
+  max-width: 1100px;
+  margin: 0 auto;
   display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  background: rgba(20, 14, 32, 0.7);
+  backdrop-filter: blur(10px);
 }
 
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
+.system-label {
+  margin: 0 0 6px;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #e8b7ca;
 }
 
-#next-steps ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
+.desktop-header h1 {
+  margin: 0;
+  font-size: clamp(22px, 4vw, 36px);
 }
 
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
+.status {
+  padding: 8px 12px;
+  border: 1px solid rgba(245, 217, 141, 0.3);
+  border-radius: 999px;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  color: #f5d98d;
+  white-space: nowrap;
 }
 
-.ticks {
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: #8ee0a1;
+  box-shadow: 0 0 10px #8ee0a1;
+}
+
+.pip-area {
   position: relative;
-  width: 100%;
+  max-width: 900px;
+  margin: 45px auto 35px;
+  text-align: center;
+}
 
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
+.stars {
+  position: absolute;
+  inset: 0;
+  color: #f5d98d;
+  font-size: 20px;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.pip {
+  position: relative;
+  width: 210px;
+  height: 220px;
+  margin: 0 auto 20px;
+}
+
+.face {
+  position: absolute;
+  left: 25px;
+  top: 55px;
+  width: 160px;
+  height: 145px;
+  border-radius: 50% 50% 46% 46%;
+  background: #f1d7ca;
+  border: 3px solid #e7bfb1;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+.eye {
+  position: absolute;
+  top: 47px;
+  width: 38px;
+  height: 45px;
+  border-radius: 50%;
+  background: #33233c;
+}
+
+.left-eye {
+  left: 32px;
+}
+
+.right-eye {
+  right: 32px;
+}
+
+.eye span {
+  position: absolute;
+  top: 18px;
+  left: 15px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f5d98d;
+  box-shadow: 0 0 9px #f5d98d;
+}
+
+.smile {
+  position: absolute;
+  left: 67px;
+  bottom: 27px;
+  font-size: 28px;
+  color: #7c5362;
+  transform: rotate(180deg);
+}
+
+.nightcap {
+  position: absolute;
+  z-index: 3;
+  left: 65px;
+  top: 4px;
+  width: 90px;
+  height: 75px;
+  padding-top: 15px;
+  border-radius: 60% 40% 10% 10%;
+  background: #b86f91;
+  border: 3px solid #925574;
+  transform: rotate(-8deg);
+  color: #f5d98d;
+  font-size: 13px;
+  letter-spacing: 8px;
+}
+
+.bow {
+  position: absolute;
+  z-index: 4;
+  right: 20px;
+  top: 50px;
+  font-size: 28px;
+  transform: rotate(12deg);
+}
+
+.pip-intro {
+  position: relative;
+  z-index: 2;
+}
+
+.pip-role {
+  margin: 0;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: #e8b7ca;
+}
+
+.pip-intro h2 {
+  margin: 8px 0;
+  font-size: clamp(30px, 6vw, 46px);
+}
+
+.pip-intro p {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: #f5d98d;
+}
+
+.pip-intro small {
+  color: #b9aabd;
+}
+
+.workshop {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.section-heading {
+  margin-bottom: 18px;
+}
+
+.section-heading p {
+  margin: 0 0 5px;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #e8b7ca;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.project-card {
+  min-height: 160px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  background: rgba(20, 14, 32, 0.7);
+  color: #fff7ef;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(245, 217, 141, 0.5);
+  background: rgba(55, 34, 61, 0.9);
+}
+
+.project-icon {
+  display: block;
+  font-size: 32px;
+  margin-bottom: 18px;
+}
+
+.project-title {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.project-description {
+  display: block;
+  color: #b9aabd;
+  font-size: 14px;
+}
+
+@media (max-width: 700px) {
+  .desktop {
+    padding: 14px;
   }
 
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
+  .desktop-header {
+    align-items: flex-start;
+    flex-direction: column;
   }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
+
+  .status {
+    font-size: 9px;
   }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pip-area {
+    margin-top: 35px;
+  }
+}
+
+.sound-control {
+  margin-top: 18px;
+  text-align: right;
+}
+
+.sound-control button {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 9px 14px;
+
+  background: rgba(20, 14, 32, 0.7);
+  color: #d9ccda;
+
+  font-family: "DM Mono", monospace;
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.sound-control button:hover {
+  border-color: rgba(245, 217, 141, 0.5);
+  color: #f5d98d;
 }
