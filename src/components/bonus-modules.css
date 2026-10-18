@@ -1,0 +1,115 @@
+/* Scoped fallback styling: works with the current handcrafted Vite CSS and
+   remains compatible with a Tailwind project. Uses Pip's existing color tokens. */
+.dream-bonus-audio-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 42px;
+  max-width: 100%;
+  padding: 0.62rem 0.82rem;
+  border: 1px solid rgba(245, 217, 141, 0.7);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #3b294b, #21182f);
+  color: #fff7ef;
+  font-family: "DM Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.055em;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 0 0 2px rgba(245, 217, 141, 0.08), 0 7px 22px rgba(8, 4, 15, 0.16);
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+.dream-bonus-audio-toggle:hover { border-color: #f5d98d; transform: translateY(-1px); }
+.dream-bonus-audio-toggle:focus-visible { outline: 3px solid #f5d98d; outline-offset: 3px; }
+.dream-bonus-audio-glyph { color: #f5d98d; font-size: 1rem; }
+.dream-bonus-audio-label { color: #fff7ef; }
+.dream-bonus-audio-state { padding: 0.2rem 0.33rem; border-radius: 0.28rem; background: rgba(120, 202, 162, 0.13); color: #a8eccb; font-size: 0.6rem; }
+.dream-bonus-audio-state.is-muted { background: rgba(232, 183, 202, 0.16); color: #f0c5d5; }
+
+.dream-guestbook {
+  min-width: 0;
+  margin: clamp(1.25rem, 4vw, 2.5rem) 0;
+  padding: clamp(1rem, 3.2vw, 2rem);
+  overflow: hidden;
+  border: 1px solid rgba(232, 183, 202, 0.3);
+  border-radius: 1.15rem;
+  background: linear-gradient(145deg, rgba(38, 27, 52, 0.96), rgba(24, 18, 39, 0.96));
+  color: #fff7ef;
+  box-shadow: inset 0 1px 0 rgba(255, 247, 239, 0.035), 0 16px 44px rgba(7, 4, 13, 0.16);
+}
+.dream-guestbook-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.2rem; }
+.dream-guestbook h2 { margin: 0.15rem 0 0.55rem; color: #fff3dc; font-family: "DM Mono", ui-monospace, monospace; font-size: clamp(1.1rem, 2.8vw, 1.55rem); line-height: 1.25; letter-spacing: -0.035em; overflow-wrap: anywhere; }
+.dream-guestbook-copy { max-width: 48ch; margin: 0; color: #d9ccda; font-size: 0.95rem; line-height: 1.55; }
+.dream-guestbook-seal { flex: 0 0 auto; display: grid; place-items: center; width: 3.4rem; height: 3.4rem; border: 1px dashed rgba(245, 217, 141, 0.58); border-radius: 50%; color: #f5d98d; font-size: 1.2rem; transform: rotate(5deg); }
+.dream-guestbook-seal small { margin-top: -0.45rem; font-family: "DM Mono", ui-monospace, monospace; font-size: 0.4rem; line-height: 1.15; letter-spacing: 0.07em; text-align: center; }
+.dream-guestbook-form { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 0.95rem; padding: 1rem; border: 1px solid rgba(232, 183, 202, 0.2); border-radius: 0.8rem; background: rgba(16, 11, 27, 0.46); }
+.dream-guestbook-field { display: grid; min-width: 0; gap: 0.42rem; color: #f7e5eb; font-size: 0.83rem; font-weight: 700; }
+.dream-guestbook-field span { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.4rem; }
+.dream-guestbook-field em { color: #c4b4ce; font-size: 0.68rem; font-style: normal; font-weight: 500; }
+.dream-guestbook-field input, .dream-guestbook-field textarea { display: block; width: 100%; min-width: 0; min-height: 44px; padding: 0.72rem 0.8rem; border: 1px solid rgba(232, 183, 202, 0.28); border-radius: 0.55rem; background: #171126; color: #fff7ef; font: inherit; font-weight: 400; line-height: 1.5; }
+.dream-guestbook-field textarea { min-height: 7rem; resize: vertical; }
+.dream-guestbook-field input::placeholder, .dream-guestbook-field textarea::placeholder { color: #a99aad; opacity: 1; }
+.dream-guestbook-field input:focus-visible, .dream-guestbook-field textarea:focus-visible { outline: 3px solid #f5d98d; outline-offset: 2px; border-color: #f5d98d; }
+.dream-guestbook-form-footer { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; padding-top: 0.15rem; color: #c4b4ce; font-size: 0.72rem; }
+.dream-guestbook-submit { max-width: 100%; }
+.dream-guestbook-status { grid-column: 1 / -1; min-height: 1rem; margin: -0.45rem 0 0; color: #f5d98d; font-size: 0.76rem; line-height: 1.4; }
+.dream-guestbook-status:empty { display: none; }
+.dream-guestbook-wall-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin: 1.25rem 0 0.55rem; color: #e8b7ca; font-family: "DM Mono", ui-monospace, monospace; font-size: 0.68rem; letter-spacing: 0.08em; }
+.dream-guestbook-wall-heading span:last-child { color: #bfb0c7; letter-spacing: 0; }
+.dream-guestbook-wall { max-height: 25rem; overflow: auto; overscroll-behavior: contain; padding: 0.1rem 0.25rem 0.1rem 0; scrollbar-color: #6e547a #21182f; scrollbar-width: thin; }
+.dream-guestbook-list { display: grid; gap: 0.6rem; margin: 0; padding: 0; list-style: none; }
+.dream-guestbook-entry { display: flex; align-items: flex-start; gap: 0.75rem; min-width: 0; padding: 0.85rem 0.9rem; border: 1px solid rgba(232, 183, 202, 0.15); border-radius: 0.7rem; background: rgba(255, 247, 239, 0.035); }
+.dream-guestbook-pin { flex: 0 0 auto; padding-top: 0.1rem; color: #f5d98d; }
+.dream-guestbook-entry-copy { flex: 1; min-width: 0; }
+.dream-guestbook-entry-copy p { margin: 0; color: #fff7ef; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+.dream-guestbook-entry-copy footer { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.55rem; color: #c4b4ce; font-size: 0.72rem; }
+.dream-guestbook-entry-copy strong { color: #e8b7ca; }
+.dream-guestbook-entry-copy time { color: #b5a4bf; }
+.dream-guestbook-empty { margin: 0; padding: 1.1rem; border: 1px dashed rgba(232, 183, 202, 0.2); border-radius: 0.65rem; color: #c4b4ce; font-size: 0.9rem; text-align: center; }
+.dream-guestbook-odometer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.85rem; margin-top: 1rem; padding: 0.85rem 0.95rem; border: 1px solid rgba(245, 217, 141, 0.28); border-radius: 0.65rem; background: rgba(9, 7, 15, 0.45); }
+.dream-guestbook-odometer > div { display: grid; gap: 0.28rem; min-width: 0; }
+.dream-guestbook-odometer-label { color: #f5d98d; font-family: "DM Mono", ui-monospace, monospace; font-size: 0.76rem; letter-spacing: 0.09em; }
+.dream-guestbook-odometer small { color: #a99aad; font-size: 0.62rem; line-height: 1.35; }
+.dream-guestbook-odometer strong { min-width: 7ch; padding: 0.35rem 0.5rem; border: 1px solid rgba(245, 217, 141, 0.23); border-radius: 0.35rem; background: #08070e; color: #b5f5c9; font-family: "DM Mono", ui-monospace, monospace; font-size: clamp(0.95rem, 2.8vw, 1.2rem); font-variant-numeric: tabular-nums; letter-spacing: 0.08em; text-align: center; }
+.dream-sparkle-trail-layer { isolation: isolate; }
+.dream-sparkle-particle { color: #fff7ef; font-size: clamp(0.85rem, 2vw, 1.25rem); line-height: 1; text-shadow: 0 0 9px rgba(245, 217, 141, 0.75), 0 0 18px rgba(232, 183, 202, 0.35); user-select: none; }
+
+.desktop.day-mode .dream-guestbook { border-color: rgba(105, 66, 104, 0.26); background: linear-gradient(145deg, rgba(255, 250, 244, 0.98), rgba(247, 237, 248, 0.98)); color: #291b38; }
+.desktop.day-mode .dream-guestbook h2, .desktop.day-mode .dream-guestbook-entry-copy p { color: #291b38; }
+.desktop.day-mode .dream-guestbook-copy, .desktop.day-mode .dream-guestbook-empty { color: #5d4b68; }
+.desktop.day-mode .dream-guestbook-form { border-color: rgba(105, 66, 104, 0.2); background: rgba(255, 255, 255, 0.65); }
+.desktop.day-mode .dream-guestbook-field { color: #43314f; }
+.desktop.day-mode .dream-guestbook-field input, .desktop.day-mode .dream-guestbook-field textarea { border-color: rgba(105, 66, 104, 0.28); background: #fffdfb; color: #291b38; }
+.desktop.day-mode .dream-guestbook-entry { border-color: rgba(105, 66, 104, 0.16); background: rgba(255, 255, 255, 0.7); }
+.desktop.day-mode .dream-guestbook-entry-copy footer { color: #5d4b68; }
+.desktop.day-mode .dream-guestbook-entry-copy strong { color: #82506a; }
+.desktop.day-mode .dream-guestbook-odometer { border-color: rgba(105, 66, 104, 0.24); }
+.desktop.chaos-mode .dream-guestbook { transform: rotate(-0.15deg); }
+.desktop.chaos-mode .dream-guestbook-entry:nth-child(even) { transform: translateX(0.2rem); }
+
+@media (max-width: 640px) {
+  .dream-bonus-audio-toggle { gap: 0.35rem; min-height: 42px; padding: 0.55rem 0.62rem; font-size: 0.65rem; }
+  .dream-bonus-audio-state { font-size: 0.56rem; }
+  .dream-guestbook-header { gap: 0.6rem; }
+  .dream-guestbook-seal { width: 2.8rem; height: 2.8rem; }
+  .dream-guestbook-form { grid-template-columns: minmax(0, 1fr); padding: 0.8rem; }
+  .dream-guestbook-form-footer { align-items: stretch; }
+  .dream-guestbook-submit { width: 100%; min-height: 44px; }
+  .dream-guestbook-odometer { align-items: flex-start; }
+  .dream-guestbook-odometer strong { margin-left: auto; }
+}
+
+@media (max-width: 360px) {
+  .dream-bonus-audio-label { white-space: normal; }
+  .dream-guestbook { padding: 0.85rem; }
+  .dream-guestbook-odometer-label { font-size: 0.68rem; }
+  .dream-guestbook-odometer small { max-width: 22ch; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dream-bonus-audio-toggle, .dream-guestbook-entry { transition: none !important; }
+  .dream-sparkle-trail-layer { display: none !important; }
+}

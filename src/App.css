@@ -1886,6 +1886,7 @@ button {
 }
 .visitor-odometer > span,
 .visitor-odometer > small { font-size: 7px; letter-spacing: 0.7px; }
+.visitor-odometer > span { white-space: nowrap; }
 .visitor-odometer strong {
   display: inline-flex;
   align-items: center;
@@ -1895,10 +1896,20 @@ button {
   border-radius: 6px;
   background: rgba(10, 7, 18, 0.5);
   color: #f5d98d;
+  width: 7ch;
+  flex: 0 0 7ch;
+  justify-content: center;
+  box-sizing: content-box;
   font: 500 12px "DM Mono", monospace;
-  letter-spacing: 2px;
+  letter-spacing: 1.2px;
   font-variant-numeric: tabular-nums;
   box-shadow: inset 0 0 12px rgba(245, 217, 141, 0.05);
+  animation: odometer-tick 260ms ease-out;
+}
+
+@keyframes odometer-tick {
+  from { opacity: 0.6; transform: translateY(-2px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .visitor-odometer > small { color: #6f607d; white-space: nowrap; }
 
@@ -1998,6 +2009,7 @@ button {
 
 @media (prefers-reduced-motion: reduce) {
   .eye span { transition: none; }
+  .visitor-odometer strong { animation: none; }
   .chaos-mode .project-card:nth-child(1),
   .chaos-mode .project-card:nth-child(2),
   .chaos-mode .project-card:nth-child(3) { transform: none; }
@@ -2236,347 +2248,3 @@ button {
 .pip .eye,
 .pip .smile { transition: transform 220ms ease, top 220ms ease, height 220ms ease; }
 .day-mode .courier-message.delivered { color: #72500c; }
-
-/* Interaction polish: immediate discovery, confident focus, and rewarding feedback. */
-.secret-note {
-  position: fixed;
-  z-index: 1200;
-  right: clamp(16px, 3vw, 36px);
-  bottom: clamp(16px, 3vw, 36px);
-  width: min(650px, calc(100vw - 32px));
-  max-width: none;
-  margin: 0;
-  border-color: rgba(245, 217, 141, 0.72);
-  background: linear-gradient(125deg, rgba(35, 23, 48, 0.97), rgba(69, 39, 68, 0.97));
-  box-shadow: 0 24px 70px rgba(5, 3, 12, 0.42), 0 0 0 1px rgba(245, 217, 141, 0.08);
-  backdrop-filter: blur(16px);
-}
-.secret-note h3 { margin-top: 2px; }
-.secret-note .panel-close { flex: 0 0 auto; }
-.day-mode .secret-note {
-  border-color: rgba(142, 88, 118, 0.55);
-  background: linear-gradient(125deg, rgba(255, 250, 255, 0.98), rgba(248, 233, 244, 0.98));
-  box-shadow: 0 24px 70px rgba(54, 33, 61, 0.2), 0 0 0 1px rgba(142, 88, 118, 0.08);
-}
-
-.sound-header-toggle[aria-pressed="false"] { opacity: 0.82; }
-.sound-header-toggle[aria-pressed="true"] { border-color: rgba(245, 217, 141, 0.48); }
-
-.dream-recipe-card:focus { outline: none; }
-.dream-recipe-card:focus-visible {
-  outline: 3px solid #f5d98d;
-  outline-offset: 5px;
-}
-.dream-recipe-card.is-reopened {
-  border-color: rgba(245, 217, 141, 0.86);
-  box-shadow: 0 0 0 1px rgba(245, 217, 141, 0.14), 0 0 42px rgba(245, 217, 141, 0.12);
-}
-.reopened-dream-notice {
-  margin: -2px 0 12px;
-  color: #f5d98d;
-  font: 10px/1.6 "DM Mono", monospace;
-  letter-spacing: 0.6px;
-  animation: recipe-arrive 240ms ease both;
-}
-.shelf-card button.is-active {
-  color: #fff3dc;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-.day-mode .reopened-dream-notice { color: #75425e; }
-.day-mode .shelf-card button.is-active { color: #533664; }
-
-.courier-arrival-note {
-  margin: 8px 0 0;
-  max-width: 520px;
-  color: #e8b7ca;
-  font-size: 12px;
-  line-height: 1.65;
-  animation: recipe-arrive 320ms ease both;
-}
-.day-mode .courier-arrival-note { color: #76405d; }
-.dream-passport .passport-stamp { animation: passport-stamp-in 520ms cubic-bezier(.2, .8, .2, 1) both; }
-@keyframes passport-stamp-in {
-  0% { opacity: 0; transform: rotate(7deg) scale(1.28); }
-  68% { opacity: 1; transform: rotate(-3deg) scale(.97); }
-  100% { opacity: 1; transform: rotate(0) scale(1); }
-}
-
-@media (max-width: 700px) {
-  .secret-note {
-    right: 12px;
-    bottom: 12px;
-    left: 12px;
-    width: auto;
-    padding: 15px;
-    gap: 10px;
-  }
-  .secret-note > div > p:last-child { font-size: 12px; }
-  .header-actions .sound-header-toggle { order: 0; }
-  .courier-arrival-note { font-size: 12px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reopened-dream-notice,
-  .courier-arrival-note,
-  .dream-passport .passport-stamp { animation: none !important; }
-}
-
-
-/* =========================
-   VISUAL REFINEMENT · DREAM OS 1.1
-   More breathing room and clearer reading while preserving Pip's night-sky identity.
-   ========================= */
-.desktop {
-  padding-inline: clamp(14px, 2.5vw, 40px);
-}
-
-.desktop-header,
-.quick-nav,
-.pip-area,
-.workshop,
-.dream-ticker,
-.origin-story {
-  width: 100%;
-  max-width: 1280px;
-}
-
-.pip-area {
-  padding-inline: clamp(18px, 3.2vw, 48px);
-}
-
-.origin-story {
-  padding-bottom: clamp(30px, 4vw, 52px);
-}
-
-.story-heading {
-  max-width: 940px;
-}
-
-.story-timeline {
-  max-width: 1040px;
-  gap: 20px;
-}
-
-.guestbook {
-  max-width: 1040px;
-}
-
-/* Keep supporting text readable without losing the tiny-computer feel. */
-.desktop .system-label { font-size: 11px; }
-.desktop .brand-subtitle { font-size: 10px; }
-.desktop .quick-nav a { font-size: 11px; }
-.desktop .quick-nav a span { font-size: 10px; }
-.desktop .quick-nav-meta { font-size: 9px; }
-.desktop .ticker-live { font-size: 9px; }
-.desktop .dream-ticker p { font-size: 11px; }
-.desktop .dream-ticker > strong { font-size: 9px; }
-.desktop .section-heading p { font-size: 11px; }
-.desktop .section-heading-note { font-size: 9px; }
-.desktop .project-index,
-.desktop .project-status { font-size: 9px; }
-.desktop .project-description { min-height: 42px; font-size: 14px; line-height: 1.7; }
-.desktop .project-card-footer { font-size: 9px; line-height: 1.5; }
-.desktop .story-heading > p { font-size: 11px; }
-.desktop .story-heading-code { font-size: 9px; }
-.desktop .story-number { font-size: 9px; }
-.desktop .story-progress-label { font-size: 9px; }
-.desktop .ritual-day-stamp span,
-.desktop .ritual-day-stamp small { font-size: 9px; }
-.desktop .ritual-day-stamp strong { font-size: 12px; }
-.desktop .daily-prompt small { font-size: 10px; }
-.desktop .ritual-step legend { font-size: 14px; }
-.desktop .ritual-step legend span { font-size: 10px; }
-.desktop .choice-card strong { font-size: 13px; }
-.desktop .choice-card small { font-size: 11px; line-height: 1.5; }
-.desktop .ingredient-choice,
-.desktop .destination-picks button { font-size: 13px; }
-.desktop .ritual-actions p { font-size: 12px; }
-.desktop .recipe-card-topline { font-size: 9px; }
-.desktop .recipe-tags span { font-size: 10px; }
-.desktop .shelf-heading > small { font-size: 11px; }
-.desktop .shelf-card > p { font-size: 9px; }
-.desktop .shelf-card button { font-size: 11px; }
-.desktop .shelf-note { font-size: 9px; line-height: 1.65; }
-.desktop .guestbook-form label > span { font-size: 12px; }
-.desktop .guestbook-form label em { font-size: 10px; }
-.desktop .guestbook-form-footer > span { font-size: 9px; }
-.desktop .guestbook-empty { font-size: 12px; }
-.desktop .guestbook-entry p { font-size: 14px; }
-.desktop .guestbook-entry footer { font-size: 9px; }
-.desktop .visit-memory { font-size: 9px !important; }
-.desktop .visitor-odometer > span,
-.desktop .visitor-odometer > small { font-size: 8px; }
-
-/* The Ritual gets a focused two-column workspace only after a recipe exists. */
-.dream-ritual {
-  display: grid;
-  width: 100%;
-  max-width: 1320px;
-  margin: clamp(34px, 4vw, 58px) auto 0;
-  grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
-  grid-template-areas:
-    "heading heading"
-    "prompt prompt"
-    "steps recipe"
-    "actions recipe"
-    "shelf shelf";
-  align-items: start;
-  column-gap: clamp(22px, 3vw, 38px);
-  row-gap: 0;
-}
-
-.ritual-heading { grid-area: heading; }
-.daily-prompt { grid-area: prompt; }
-.ritual-steps { grid-area: steps; grid-template-columns: minmax(0, 1fr); gap: 22px; }
-.ritual-actions { grid-area: actions; align-self: end; }
-.dream-shelf { grid-area: shelf; min-width: 0; }
-
-.dream-ritual:not(.has-recipe) {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-areas:
-    "heading"
-    "prompt"
-    "steps"
-    "actions"
-    "shelf";
-}
-
-.dream-ritual.has-recipe .dream-recipe-card {
-  grid-area: recipe;
-  width: 100%;
-  max-width: none;
-  min-width: 0;
-  margin: 0;
-  align-self: start;
-}
-
-.dream-ritual.has-recipe .mood-choices {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.dream-ritual.has-recipe .choice-card {
-  min-height: 108px;
-  padding: 12px;
-}
-
-.dream-ritual.has-recipe .recipe-card-art {
-  gap: clamp(14px, 2vw, 32px);
-  margin: 12px 0;
-  padding: 12px 6px;
-}
-
-.dream-ritual.has-recipe .recipe-card-art span { font-size: 24px; }
-.dream-ritual.has-recipe .dream-recipe-card h3 { font-size: clamp(22px, 2.5vw, 28px); }
-.dream-ritual.has-recipe .recipe-message { font-size: 14px; line-height: 1.75; }
-
-/* Make the active Chaos Mode feel like a little dream-world remix, not broken layout. */
-.chaos-mode .project-card {
-  isolation: isolate;
-  border-color: rgba(232, 183, 202, 0.32);
-}
-
-.chaos-mode .project-card::before {
-  position: absolute;
-  z-index: 2;
-  top: 56px;
-  right: 12px;
-  max-width: 43%;
-  padding: 5px 7px;
-  border: 1px dashed rgba(245, 217, 141, 0.52);
-  border-radius: 9px 5px 8px 5px;
-  background: rgba(17, 11, 27, 0.78);
-  color: #f5d98d;
-  font: 8px/1.35 "DM Mono", monospace;
-  letter-spacing: 0.6px;
-  text-align: center;
-  pointer-events: none;
-}
-
-.chaos-mode .project-card:nth-child(1)::before { content: "EXTRA TWINKLE"; transform: rotate(3deg); }
-.chaos-mode .project-card:nth-child(2)::before { content: "SOFT GLOW"; transform: rotate(-3deg); }
-.chaos-mode .project-card:nth-child(3)::before { content: "DELIVERY CHAOS"; transform: rotate(2deg); }
-.chaos-mode .project-card:nth-child(1) .project-icon { transform: rotate(-5deg); }
-.chaos-mode .project-card:nth-child(2) .project-icon { transform: rotate(4deg); }
-.chaos-mode .project-card:nth-child(3) .project-icon { transform: rotate(-4deg); }
-.chaos-mode .dream-ritual { box-shadow: 0 0 0 1px rgba(245, 217, 141, 0.08), 0 24px 60px rgba(4, 2, 10, 0.16); }
-
-/* Increase contrast in the light theme for labels that otherwise fade into lilac. */
-.day-mode .project-description,
-.day-mode .story-scene p,
-.day-mode .guestbook-entry p,
-.day-mode .recipe-message { color: #51405d; }
-.day-mode .ritual-actions p,
-.day-mode .shelf-note,
-.day-mode .guestbook-empty,
-.day-mode .guestbook-form-footer > span,
-.day-mode .ritual-day-stamp span,
-.day-mode .ritual-day-stamp small { color: #5f4a6c; }
-.day-mode .choice-card small,
-.day-mode .shelf-card > p,
-.day-mode .section-heading-note,
-.day-mode .quick-nav-meta { color: #665173; }
-
-@media (max-width: 1050px) {
-  .desktop-header,
-  .quick-nav,
-  .pip-area,
-  .workshop,
-  .dream-ticker,
-  .origin-story { max-width: 100%; }
-
-  .dream-ritual.has-recipe {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      "heading"
-      "prompt"
-      "steps"
-      "actions"
-      "recipe"
-      "shelf";
-  }
-
-  .dream-ritual.has-recipe .dream-recipe-card { margin-top: 10px; }
-  .dream-ritual.has-recipe .ritual-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .dream-ritual.has-recipe .ritual-destination-step { grid-column: 1 / -1; }
-}
-
-@media (max-width: 700px) {
-  .desktop { padding-inline: 12px; }
-  .desktop-header,
-  .quick-nav,
-  .pip-area,
-  .workshop,
-  .dream-ticker,
-  .origin-story { max-width: 100%; }
-  .desktop .project-description { font-size: 13px; }
-  .desktop .guestbook-entry p { font-size: 13px; }
-  .story-timeline { max-width: 100%; }
-  .story-scene { grid-template-columns: 30px 58px minmax(0, 1fr); gap: 10px; padding: 15px; }
-  .story-illustration { width: 54px; height: 54px; font-size: 26px; }
-  .story-timeline::before { left: 18px; }
-  .dream-ritual { padding: 18px; }
-  .dream-ritual.has-recipe .ritual-steps { grid-template-columns: minmax(0, 1fr); }
-  .dream-ritual.has-recipe .mood-choices { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .dream-ritual.has-recipe .choice-card { min-height: 100px; padding: 10px; }
-  .dream-ritual.has-recipe .recipe-tags { gap: 6px; }
-  .dream-ritual.has-recipe .recipe-tags span { font-size: 10px; }
-  .chaos-mode .project-card::before { top: 50px; right: 9px; font-size: 7px; }
-  .dream-ritual .ritual-actions { align-items: stretch; flex-direction: column; }
-  .dream-ritual .ritual-create-button { width: 100%; }
-}
-
-@media (max-width: 420px) {
-  .dream-ritual.has-recipe .mood-choices { grid-template-columns: minmax(0, 1fr); }
-  .dream-ritual.has-recipe .choice-card { min-height: 84px; }
-  .ritual-heading { flex-direction: column; }
-  .ritual-day-stamp { align-self: flex-start; }
-  .shelf-heading { align-items: flex-start; flex-direction: column; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chaos-mode .project-card:nth-child(1) .project-icon,
-  .chaos-mode .project-card:nth-child(2) .project-icon,
-  .chaos-mode .project-card:nth-child(3) .project-icon { transform: none; }
-  .chaos-mode .project-card::before { transform: none !important; }
-}
