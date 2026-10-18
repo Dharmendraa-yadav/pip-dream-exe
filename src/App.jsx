@@ -24,12 +24,6 @@ const dailyDreamPrompts = [
   "If tomorrow arrived as a gift, what would you hope was inside?",
 ];
 
-const destinationArrivalNotes = Object.freeze({
-  "Moon Garden": "The moonflowers opened just in time to keep your wish warm.",
-  "Cloud Harbor": "A sleepy cloud caught your wish and tucked it into a soft silver blanket.",
-  "Star Library": "Your wish is resting safely between two very bright pages.",
-});
-
 function escapePrintText(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => ({
     "&": "&amp;",
@@ -145,6 +139,23 @@ function App() {
       return 0;
     }
   });
+  const [dreamActivityCount, setDreamActivityCount] = useState(() => {
+    try {
+      const storedCount = window.localStorage.getItem("pip-dream-simulated-count");
+      if (storedCount !== null) {
+        const count = Number(storedCount);
+        return Number.isSafeInteger(count) && count >= 0 ? Math.min(count, 999999) : 0;
+      }
+
+      // Seed the new metric with any already-saved dreams, without inventing past compile events.
+      const existingShelf = JSON.parse(window.localStorage.getItem("pip-dream-shelf") || "[]");
+      return Array.isArray(existingShelf)
+        ? Math.min(existingShelf.filter((item) => item && typeof item.id === "string").length, 999999)
+        : 0;
+    } catch {
+      return 0;
+    }
+  });
   const [returningVisitor, setReturningVisitor] = useState(() => visitCount > 0);
   const [dreamSaveMessage, setDreamSaveMessage] = useState("");
   const [pipTapCount, setPipTapCount] = useState(0);
@@ -155,7 +166,6 @@ function App() {
   const [ritualIngredient, setRitualIngredient] = useState("moon-dust");
   const [ritualDestination, setRitualDestination] = useState("Moon Garden");
   const [generatedDream, setGeneratedDream] = useState(null);
-  const [reopenedDreamId, setReopenedDreamId] = useState(null);
   const [dreamShelf, setDreamShelf] = useState(() => {
     try {
       const saved = JSON.parse(window.localStorage.getItem("pip-dream-shelf") || "[]");
@@ -186,39 +196,21 @@ function App() {
   const masterGainRef = useRef(null);
   const courierTimerRef = useRef(null);
   const lullabyTimerRef = useRef(null);
-  const recipeCardRef = useRef(null);
 
   useEffect(() => {
     return () => {
       window.clearTimeout(courierTimerRef.current);
       window.clearTimeout(lullabyTimerRef.current);
-      const audioContext = audioContextRef.current;
-      if (audioContext && audioContext.state !== "closed") {
-        void audioContext.close().catch(() => {
-          // Audio is an enhancement; teardown should never block navigation.
-        });
-      }
     };
   }, []);
 
-  // Reopening a saved dream should bring the recipe back into view and keyboard focus.
   useEffect(() => {
-    if (!reopenedDreamId) return undefined;
-
-    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
-    const frameId = window.requestAnimationFrame(() => {
-      const card = recipeCardRef.current;
-      if (!card) return;
-      card.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
-      card.focus({ preventScroll: true });
-    });
-    const timeoutId = window.setTimeout(() => setReopenedDreamId(null), 1200);
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-      window.clearTimeout(timeoutId);
-    };
-  }, [reopenedDreamId, generatedDream]);
+    try {
+      window.localStorage.setItem("pip-dream-simulated-count", String(dreamActivityCount));
+    } catch {
+      // The counter still updates for this visit when browser storage is unavailable.
+    }
+  }, [dreamActivityCount]);
 
   useEffect(() => {
     if (!started) return undefined;
@@ -365,26 +357,38 @@ function App() {
       moodId: mood.id,
       moodIcon: mood.icon,
       ingredient: ingredient.label,
-      ingredientId: ingredient.id,
       ingredientIcon: ingredient.icon,
       destination: ritualDestination,
       title: titleOptions[titleIndex],
       message: `${mood.line} Add ${ingredient.detail}, then follow Pip's tiny lanterns to ${ritualDestination}.`,
     };
     setGeneratedDream(recipe);
+    // A completed compile is an activity even before the visitor chooses to save it.
+    setDreamActivityCount((count) => Math.min(count + 1, 999999));
   };
 
   const saveDreamRecipe = () => {
     if (!generatedDream) return;
+    const isNewShelfEntry = !dreamShelf.some((item) => item.id === generatedDream.id);
     const nextShelf = [generatedDream, ...dreamShelf.filter((item) => item.id !== generatedDream.id)].slice(0, 4);
-    setPipExpression("delighted");
     setDreamShelf(nextShelf);
+
+    let persisted = true;
     try {
       window.localStorage.setItem("pip-dream-shelf", JSON.stringify(nextShelf));
-      setDreamSaveMessage("Saved to your Dream Shelf on this device.");
     } catch {
-      // The ritual remains available in the current view if storage is unavailable.
-      setDreamSaveMessage("Kept for this visit, but browser storage is unavailable.");
+      // The shelf remains available in the current view if storage is unavailable.
+      persisted = false;
+    }
+
+    if (isNewShelfEntry) {
+      // Re-saving or reopening the same recipe does not count as another shelf addition.
+      setDreamActivityCount((count) => Math.min(count + 1, 999999));
+      setDreamSaveMessage(persisted
+        ? "Saved to your Dream Shelf on this device."
+        : "Added for this visit, but browser storage is unavailable.");
+    } else {
+      setDreamSaveMessage("This dream is already on your Dream Shelf.");
     }
   };
 
@@ -392,31 +396,13 @@ function App() {
     if (!generatedDream) return;
     setDestination(generatedDream.destination);
     openProject("courier");
-    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
-    document.getElementById("workshop")?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-  };
-
-  const reopenDream = (dream) => {
-    setGeneratedDream(dream);
-    setRitualDestination(dream.destination || "Moon Garden");
-
-    const savedMood = dreamMoods.find((item) => item.id === dream.moodId)
-      || dreamMoods.find((item) => item.label === dream.mood);
-    const savedIngredient = dreamIngredients.find((item) => item.id === dream.ingredientId)
-      || dreamIngredients.find((item) => item.label === dream.ingredient);
-    if (savedMood) setRitualMood(savedMood.id);
-    if (savedIngredient) setRitualIngredient(savedIngredient.id);
-
-    setDreamSaveMessage("");
-    setPipExpression("curious");
-    setReopenedDreamId(dream.id);
+    document.getElementById("workshop")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const handlePipTap = () => {
     if (secretFound) return;
     const nextCount = pipTapCount + 1;
     setPipTapCount(nextCount);
-    setPipExpression(nextCount >= 5 ? "delighted" : "curious");
     if (nextCount >= 5) setSecretFound(true);
   };
 
@@ -529,7 +515,6 @@ function App() {
       mood: dream?.mood || "A little hope",
       ingredient: dream?.ingredient || "Moonlight",
       destination,
-      arrivalNote: destinationArrivalNotes[destination] || "Your little wish has found a safe place to rest.",
       dateLabel: new Date().toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" }),
     };
 
@@ -567,17 +552,6 @@ function App() {
     <main className={`desktop ${dayMode ? "day-mode" : ""} ${chaosMode ? "chaos-mode" : ""} ${focusMode ? "focus-mode" : ""}`}>
       <a className="skip-link" href="#workshop">Skip to the workshop</a>
       <div ref={cursorSparkleRef} className="cursor-sparkle" aria-hidden="true">✦</div>
-      {secretFound && (
-        <aside className="secret-note" role="status" aria-live="polite" aria-atomic="true">
-          <span className="secret-stamp" aria-hidden="true">✦</span>
-          <div>
-            <p className="panel-kicker">HIDDEN FILE FOUND · 05/05</p>
-            <h3>Pip&apos;s little secret</h3>
-            <p>Dear dreamer, even the smallest light can help someone find their way. Thank you for staying curious. — Pip</p>
-          </div>
-          <button type="button" className="panel-close" onClick={() => setSecretFound(false)} aria-label="Close Pip’s secret note">✕</button>
-        </aside>
-      )}
       <header className="desktop-header">
         <div className="header-brand">
           <div className="brand-mark" aria-hidden="true"><span>P</span><i>✦</i></div>
@@ -588,16 +562,6 @@ function App() {
           </div>
         </div>
         <div className="header-actions">
-          <button
-            className="theme-toggle sound-header-toggle"
-            type="button"
-            onClick={toggleSound}
-            aria-pressed={soundEnabled}
-            aria-label={soundEnabled ? "Turn all sounds off" : "Turn all sounds on"}
-            title="Mute or enable all Pip sounds."
-          >
-            {soundEnabled ? "🔊 Sound on" : "🔇 Sound off"}
-          </button>
           <button
             className="theme-toggle"
             type="button"
@@ -659,7 +623,7 @@ function App() {
         <button
           type="button"
           className={`pip pip-secret-trigger pip-expression-${pipExpression} ${secretFound ? "secret-found" : ""}`}
-          aria-label={`Pip, a little dream engineer, currently ${pipExpression}. Activate to say hello.`}
+          aria-label={`Pip, a little dream engineer, currently ${pipExpression}. Tap five times to find a secret.`}
           onClick={handlePipTap}
         >
           <div className="nightcap" aria-hidden="true">
@@ -697,9 +661,9 @@ function App() {
       <div className="dream-ticker" aria-label="Dream system status">
         <span className="ticker-live"><i aria-hidden="true" /> SIGNAL ONLINE</span>
         <p>Every little dream deserves a safe journey <span aria-hidden="true">✦</span> take what you need, leave a little wonder.</p>
-        <div className="visitor-odometer" title="This count is saved locally in this browser, not shared across visitors." aria-label={`Local visit counter: ${visitCount} visits recorded in this browser`}>
-          <span>LOCAL VISITS</span>
-          <strong aria-hidden="true">{String(visitCount).padStart(6, "0").slice(-6)}</strong>
+        <div className="visitor-odometer" title="Dream activity is counted locally in this browser, not shared across visitors." aria-label={`Dream activity counter: ${dreamActivityCount} events recorded in this browser`} aria-live="polite" aria-atomic="true">
+          <span>DREAMS SIMULATED</span>
+          <strong key={dreamActivityCount} aria-hidden="true">{String(dreamActivityCount).padStart(6, "0").slice(-6).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</strong>
           <small>THIS DEVICE</small>
         </div>
       </div>
@@ -854,15 +818,12 @@ function App() {
                       ? `Dream delivered to ${destination}! Sweet dreams ✨`
                       : "The sky is clear. Ready for delivery?"}
               </p>
-              {courierStatus === "delivered" && courierReceipt?.arrivalNote && (
-                <p className="courier-arrival-note" role="status">{courierReceipt.arrivalNote}</p>
-              )}
               <button
                 className="action-button send-dream-button"
                 onClick={sendDream}
                 disabled={courierStatus === "preparing" || courierStatus === "in-flight"}
               >
-                {courierStatus === "preparing" ? "Preparing launch…" : courierStatus === "in-flight" ? "Dream in transit…" : courierStatus === "delivered" ? "Replay delivery ↻" : "Send the dream ✦"}
+                {courierStatus === "preparing" ? "Preparing launch…" : courierStatus === "in-flight" ? "Dream in transit…" : courierStatus === "delivered" ? "Send another dream" : "Send the dream ✦"}
               </button>
             </div>
 
@@ -896,7 +857,7 @@ function App() {
         </div>
       </section>
 
-      <section className={`dream-ritual ${generatedDream ? "has-recipe" : ""}`} id="dream-ritual" aria-labelledby="ritual-heading">
+      <section className="dream-ritual" id="dream-ritual" aria-labelledby="ritual-heading">
         <div className="ritual-heading">
           <div>
             <p className="panel-kicker">PERSONAL MODULE · RITUAL 001</p>
@@ -947,17 +908,7 @@ function App() {
         </div>
 
         {generatedDream && (
-          <article
-            id="dream-recipe-card"
-            ref={recipeCardRef}
-            className={`dream-recipe-card ${reopenedDreamId === generatedDream.id ? "is-reopened" : ""}`}
-            aria-live="polite"
-            aria-label={`Dream recipe: ${generatedDream.title}`}
-            tabIndex={-1}
-          >
-            {reopenedDreamId === generatedDream.id && (
-              <p className="reopened-dream-notice" role="status">✦ Pip found this little world again.</p>
-            )}
+          <article className="dream-recipe-card" aria-live="polite">
             <div className="recipe-card-topline"><span>YOUR DREAM RECIPE</span><span>{generatedDream.dateLabel}</span></div>
             <div className="recipe-card-art" aria-hidden="true"><span>{generatedDream.ingredientIcon}</span><i>✦</i><b>{generatedDream.moodIcon}</b><span>☾</span></div>
             <p className="panel-kicker">A LITTLE DREAM FOR {generatedDream.mood.toUpperCase()}</p>
@@ -981,14 +932,7 @@ function App() {
                   <div className="shelf-card-icons" aria-hidden="true"><span>{dream.ingredientIcon || "✦"}</span><span>{dream.moodIcon || "☾"}</span></div>
                   <p>{dream.dateLabel || "Saved dream"} · {dream.destination}</p>
                   <h4>{dream.title}</h4>
-                  <button
-                    type="button"
-                    className={reopenedDreamId === dream.id ? "is-active" : ""}
-                    aria-label={`Reopen ${dream.title} in Dream Ritual`}
-                    onClick={() => reopenDream(dream)}
-                  >
-                    Open this dream ↗
-                  </button>
+                  <button type="button" onClick={() => { setGeneratedDream(dream); setRitualDestination(dream.destination); setDreamSaveMessage(""); }}>Open this dream ↗</button>
                 </article>
               ))}
             </div>
@@ -1082,6 +1026,17 @@ function App() {
           )}
         </section>
 
+        {secretFound && (
+          <aside className="secret-note" role="status" aria-live="polite">
+            <span className="secret-stamp" aria-hidden="true">✦</span>
+            <div>
+              <p className="panel-kicker">HIDDEN FILE FOUND · 05/05</p>
+              <h3>Pip&apos;s little secret</h3>
+              <p>Dear dreamer, even the smallest light can help someone find their way. Thank you for staying curious. — Pip</p>
+            </div>
+            <button className="panel-close" onClick={() => setSecretFound(false)} aria-label="Close secret note">✕</button>
+          </aside>
+        )}
         <footer className="site-credits">
           <span>MADE UNDER A FRIENDLY NIGHT SKY</span>
           <span>CSS-DRAWN PIP · NUNITO + DM MONO / GOOGLE FONTS</span>
