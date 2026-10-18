@@ -50,3 +50,19 @@ select:focus-visible {
   color: #291b38;
   background: #e8b7ca;
 }
+
+:root {
+  color-scheme: dark;
+  --pip-night: #171126;
+  --pip-plum: #291b38;
+  --pip-pink: #e8b7ca;
+  --pip-gold: #f5d98d;
+}
+
+body { overflow-x: hidden; }
+
+a, button, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+
+button:disabled { cursor: not-allowed; }
+
+html { scroll-padding-top: 18px; }

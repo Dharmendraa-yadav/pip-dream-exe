@@ -13,6 +13,21 @@ function App() {
   const [dayMode, setDayMode] = useState(false);
   const [pipTapCount, setPipTapCount] = useState(0);
   const [secretFound, setSecretFound] = useState(false);
+  const [guestbookName, setGuestbookName] = useState("");
+  const [guestbookMessage, setGuestbookMessage] = useState("");
+  const [guestbookEntries, setGuestbookEntries] = useState(() => {
+    try {
+      const savedEntries = window.localStorage.getItem("pip-dream-guestbook");
+      const parsedEntries = savedEntries ? JSON.parse(savedEntries) : [];
+      return Array.isArray(parsedEntries)
+        ? parsedEntries
+            .filter((entry) => entry && typeof entry.name === "string" && typeof entry.message === "string")
+            .slice(0, 6)
+        : [];
+    } catch {
+      return [];
+    }
+  });
 
   const audioContextRef = useRef(null);
   const cursorSparkleRef = useRef(null);
@@ -70,6 +85,70 @@ function App() {
     scenes.forEach((scene) => observer.observe(scene));
     return () => observer.disconnect();
   }, [started]);
+
+  useEffect(() => {
+    if (!started || !soundEnabled) return undefined;
+
+    const desktop = document.querySelector(".desktop");
+    if (!desktop) return undefined;
+
+    const handleUiClick = (event) => {
+      const target = event.target instanceof Element
+        ? event.target.closest("button, a, select")
+        : null;
+      if (!target || target.matches(":disabled") || target.getAttribute("aria-disabled") === "true") return;
+
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      if (!audioContextRef.current) {
+        audioContextRef.current = new AudioContextClass();
+        masterGainRef.current = audioContextRef.current.createGain();
+        masterGainRef.current.gain.value = 1;
+        masterGainRef.current.connect(audioContextRef.current.destination);
+      }
+
+      const context = audioContextRef.current;
+      if (context.state === "suspended") void context.resume();
+
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      const now = context.currentTime;
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(780, now);
+      gain.gain.setValueAtTime(0.018, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
+      oscillator.connect(gain);
+      gain.connect(masterGainRef.current);
+      oscillator.start(now);
+      oscillator.stop(now + 0.06);
+    };
+
+    desktop.addEventListener("click", handleUiClick, true);
+    return () => desktop.removeEventListener("click", handleUiClick, true);
+  }, [started, soundEnabled]);
+
+  const handleGuestbookSubmit = (event) => {
+    event.preventDefault();
+    const message = guestbookMessage.trim().slice(0, 160);
+    if (!message) return;
+
+    const entry = {
+      id: `${Date.now()}-${Math.random().toString(16).slice(2, 7)}`,
+      name: guestbookName.trim().slice(0, 26) || "Sleepy visitor",
+      message,
+      stamp: new Date().toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+    };
+    const nextEntries = [entry, ...guestbookEntries].slice(0, 6);
+    setGuestbookEntries(nextEntries);
+    try {
+      window.localStorage.setItem("pip-dream-guestbook", JSON.stringify(nextEntries));
+    } catch {
+      // The guestbook still works for this visit when storage is unavailable.
+    }
+    setGuestbookName("");
+    setGuestbookMessage("");
+  };
 
   const handlePipTap = () => {
     if (secretFound) return;
@@ -179,9 +258,13 @@ function App() {
     <main className={`desktop ${dayMode ? "day-mode" : ""}`}>
       <div ref={cursorSparkleRef} className="cursor-sparkle" aria-hidden="true">✦</div>
       <header className="desktop-header">
-        <div>
-          <p className="system-label">MIDNIGHT NURSERY SYSTEMS</p>
-          <h1>Pip&apos;s Dream Workshop</h1>
+        <div className="header-brand">
+          <div className="brand-mark" aria-hidden="true"><span>P</span><i>✦</i></div>
+          <div className="brand-copy">
+            <p className="system-label">MIDNIGHT NURSERY SYSTEMS</p>
+            <h1>Pip&apos;s Dream Workshop</h1>
+            <p className="brand-subtitle">A PERSONAL DREAM OPERATING SYSTEM</p>
+          </div>
         </div>
         <div className="header-actions">
           <button
@@ -199,7 +282,20 @@ function App() {
         </div>
       </header>
 
-      <section className="pip-area" aria-labelledby="pip-heading">
+      <nav className="quick-nav" aria-label="Main navigation">
+        <a href="#profile"><span>01</span> PROFILE</a>
+        <a href="#workshop"><span>02</span> WORKSHOP</a>
+        <a href="#origin-story"><span>03</span> DREAM LOG</a>
+        <span className="quick-nav-meta"><i aria-hidden="true" /> BUILD 1.0 · 3 MODULES</span>
+      </nav>
+
+      <section className="pip-area" id="profile" aria-labelledby="pip-heading">
+        <div className="orbit-card orbit-card-left" aria-hidden="true">
+          <span>MOOD FILE</span><strong>sleepy.exe</strong><small>RUNNING WELL</small>
+        </div>
+        <div className="orbit-card orbit-card-right" aria-hidden="true">
+          <span>MODULES READY</span><strong>03 <i>／ 03</i></strong><small>ALL SYSTEMS GENTLE</small>
+        </div>
         <div className="stars" aria-hidden="true">✦ ˚ ✧ ⋆ ˚ ✦ ˚ ⋆</div>
         <button
           type="button"
@@ -223,44 +319,63 @@ function App() {
           <h2 id="pip-heading">Hi, I&apos;m Pip.</h2>
           <p>I build the dreams you fall asleep inside.</p>
           <small>Curious · Sleepy · Gentle · Slightly Clumsy</small>
+          <div className="hero-signals" aria-label="Pip's principles">
+            <span><i aria-hidden="true">✦</i> SOFT MAGIC ENABLED</span>
+            <span><i aria-hidden="true">♡</i> NO DREAM LEFT BEHIND</span>
+          </div>
         </div>
       </section>
 
-      <section className="workshop" aria-labelledby="workshop-heading">
+      <div className="dream-ticker" aria-label="Dream system status">
+        <span className="ticker-live"><i aria-hidden="true" /> SIGNAL ONLINE</span>
+        <p>Every little dream deserves a safe journey <span aria-hidden="true">✦</span> take what you need, leave a little wonder.</p>
+        <strong>SYS // 001</strong>
+      </div>
+
+      <section className="workshop" id="workshop" aria-labelledby="workshop-heading">
         <div className="section-heading">
-          <p>OPEN THE WORKSHOP</p>
-          <h2 id="workshop-heading">What should we make tonight?</h2>
+          <div>
+            <p>OPEN THE WORKSHOP <span className="section-heading-slash">/ CHOOSE A MODULE</span></p>
+            <h2 id="workshop-heading">What should we make tonight?</h2>
+          </div>
+          <span className="section-heading-note">THREE LITTLE WAYS TO DREAM <b>↘</b></span>
         </div>
 
         <div className="project-grid">
-          <button className="project-card" onClick={playLullaby} aria-pressed={lullabyPlaying}>
-            <span className="project-icon" aria-hidden="true">🎵</span>
-            <span className="project-title">{lullabyPlaying ? "Playing..." : "Lullaby Lab"}</span>
+          <button className={`project-card ${lullabyPlaying ? "is-playing" : ""}`} onClick={playLullaby} aria-pressed={lullabyPlaying}>
+            <span className="project-topline"><span className="project-index">MODULE 01</span><span className="project-status">AUDIO</span></span>
+            <span className="project-icon icon-music" aria-hidden="true">♫</span>
+            <span className="project-title">{lullabyPlaying ? "Lullaby playing" : "Lullaby Lab"}</span>
             <span className="project-description">
               {lullabyPlaying
                 ? "Pip is playing a tiny bedtime melody."
                 : "Build a tiny bedtime melody."}
             </span>
+            <span className="project-card-footer"><span>{lullabyPlaying ? "SEQUENCE PLAYING" : "PLAY A MELODY"}</span><span aria-hidden="true">↗</span></span>
           </button>
 
           <button
-            className="project-card"
+            className={`project-card ${activeProject === "nightlight" ? "is-selected" : ""}`}
             onClick={() => openProject("nightlight")}
             aria-expanded={activeProject === "nightlight"}
           >
-            <span className="project-icon" aria-hidden="true">💡</span>
+            <span className="project-topline"><span className="project-index">MODULE 02</span><span className="project-status">LIGHT</span></span>
+            <span className="project-icon icon-light" aria-hidden="true">✹</span>
             <span className="project-title">Nightlight Studio</span>
             <span className="project-description">Paint the perfect sleepy glow.</span>
+            <span className="project-card-footer"><span>{activeProject === "nightlight" ? "MIXER OPEN" : "OPEN LIGHT MIXER"}</span><span aria-hidden="true">↗</span></span>
           </button>
 
           <button
-            className="project-card"
+            className={`project-card ${activeProject === "courier" ? "is-selected" : ""}`}
             onClick={() => openProject("courier")}
             aria-expanded={activeProject === "courier"}
           >
-            <span className="project-icon" aria-hidden="true">🚀</span>
+            <span className="project-topline"><span className="project-index">MODULE 03</span><span className="project-status">DELIVERY</span></span>
+            <span className="project-icon icon-rocket" aria-hidden="true">🚀</span>
             <span className="project-title">Dream Courier</span>
             <span className="project-description">Deliver a dream across the night sky.</span>
+            <span className="project-card-footer"><span>{activeProject === "courier" ? "ROUTE PLANNER OPEN" : "CHOOSE A DESTINATION"}</span><span aria-hidden="true">↗</span></span>
           </button>
         </div>
 
@@ -383,11 +498,12 @@ function App() {
         </div>
       </section>
 
-      <section className="origin-story" aria-labelledby="origin-heading">
+      <section className="origin-story" id="origin-story" aria-labelledby="origin-heading">
         <div className="story-heading">
-          <p>THE STORY SO FAR</p>
+          <p>THE STORY SO FAR <span className="story-heading-code">/ MEMORY LOG 001</span></p>
           <h2 id="origin-heading">Every dream has a beginning.</h2>
           <span>Scroll gently to follow Pip&apos;s story ✦</span>
+          <div className="story-progress-label"><span>ORIGIN FILE</span><strong>03 SCENES · 01 PROMISE</strong></div>
         </div>
         <div className="story-timeline">
           <article className="story-scene scene-nursery">
@@ -415,6 +531,56 @@ function App() {
             </div>
           </article>
         </div>
+        <section className="guestbook" aria-labelledby="guestbook-title">
+          <div className="guestbook-header">
+            <div>
+              <p className="panel-kicker">SIDE QUEST 01 · THE DREAMBOOK</p>
+              <h3 id="guestbook-title">Leave a tiny dream behind.</h3>
+              <p className="guestbook-copy">A small note for the next person passing through the night.</p>
+            </div>
+            <span className="guestbook-seal" aria-hidden="true">✎<small>PIN A<br />WISH</small></span>
+          </div>
+          <form className="guestbook-form" onSubmit={handleGuestbookSubmit}>
+            <label>
+              <span>Your sleepy name <em>optional</em></span>
+              <input
+                type="text"
+                value={guestbookName}
+                maxLength={26}
+                placeholder="A moon visitor"
+                onChange={(event) => setGuestbookName(event.target.value)}
+              />
+            </label>
+            <label>
+              <span>Your note <em>160 characters max</em></span>
+              <textarea
+                value={guestbookMessage}
+                maxLength={160}
+                rows={3}
+                required
+                placeholder="Leave a kind wish, a dream, or a tiny hello..."
+                onChange={(event) => setGuestbookMessage(event.target.value)}
+              />
+            </label>
+            <div className="guestbook-form-footer">
+              <span>{guestbookMessage.length}/160 · Saved on this device only</span>
+              <button className="action-button" type="submit" disabled={!guestbookMessage.trim()}>Pin to dreambook ✦</button>
+            </div>
+          </form>
+          {guestbookEntries.length ? (
+            <div className="guestbook-entries" aria-live="polite">
+              {guestbookEntries.map((entry) => (
+                <article className="guestbook-entry" key={entry.id}>
+                  <span className="entry-pin" aria-hidden="true">✦</span>
+                  <div><p>{entry.message}</p><footer><strong>{entry.name}</strong><time>{entry.stamp || "Saved dream"}</time></footer></div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="guestbook-empty">No notes in the dreambook yet. Yours can be the first ✧</p>
+          )}
+        </section>
+
         {secretFound && (
           <aside className="secret-note" role="status" aria-live="polite">
             <span className="secret-stamp" aria-hidden="true">✦</span>
@@ -428,6 +594,7 @@ function App() {
         )}
         <footer className="site-credits">
           <span>MADE UNDER A FRIENDLY NIGHT SKY</span>
+          <span>CSS-DRAWN PIP · NUNITO + DM MONO / GOOGLE FONTS</span>
           <span>PIP:// DREAM.EXE · MIDNIGHT NURSERY SYSTEMS</span>
         </footer>
       </section>
