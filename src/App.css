@@ -1837,3 +1837,746 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .dream-recipe-card, .recipe-card-art i { animation: none; }
 }
+
+
+/* =========================
+   PROFESSIONAL POLISH · VISITOR MEMORY + RESPONSIVE CHAOS
+   ========================= */
+.skip-link {
+  position: absolute;
+  z-index: 100;
+  top: 8px;
+  left: 8px;
+  padding: 11px 14px;
+  border: 1px solid rgba(245, 217, 141, 0.7);
+  border-radius: 10px;
+  background: #fff3dc;
+  color: #291b38;
+  font: 700 12px "DM Mono", monospace;
+  text-decoration: none;
+  transform: translateY(-160%);
+}
+.skip-link:focus { transform: translateY(0); }
+
+.desktop :is(button, a, input, textarea, select):focus-visible {
+  outline: 3px solid #f5d98d;
+  outline-offset: 3px;
+}
+
+.visit-memory {
+  width: fit-content;
+  max-width: 100%;
+  margin: 10px auto 0 !important;
+  padding: 6px 10px;
+  border: 1px dashed rgba(245, 217, 141, 0.24);
+  border-radius: 999px;
+  color: #cbb4d7 !important;
+  font: 8px/1.5 "DM Mono", monospace !important;
+  letter-spacing: 0.65px;
+}
+
+.visitor-odometer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 170px;
+  color: #8f7d9b;
+  font-family: "DM Mono", monospace;
+}
+.visitor-odometer > span,
+.visitor-odometer > small { font-size: 7px; letter-spacing: 0.7px; }
+.visitor-odometer strong {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 8px;
+  border: 1px solid rgba(245, 217, 141, 0.25);
+  border-radius: 6px;
+  background: rgba(10, 7, 18, 0.5);
+  color: #f5d98d;
+  font: 500 12px "DM Mono", monospace;
+  letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+  box-shadow: inset 0 0 12px rgba(245, 217, 141, 0.05);
+}
+.visitor-odometer > small { color: #6f607d; white-space: nowrap; }
+
+.theme-toggle { min-height: 42px; }
+.chaos-toggle { border-style: dashed; }
+.chaos-toggle.is-active {
+  border-color: rgba(245, 217, 141, 0.75);
+  background: linear-gradient(110deg, rgba(232, 183, 202, 0.19), rgba(245, 217, 141, 0.12));
+  color: #fff3dc;
+  box-shadow: 0 0 24px rgba(232, 183, 202, 0.1);
+}
+
+/* The pupils follow the pointer on desktop; touch users still get Pip's tap interaction. */
+.eye span {
+  transform: translate(var(--eye-x, 0px), var(--eye-y, 0px));
+  transition: transform 90ms ease-out;
+}
+
+/* Chaos is a deliberate, reversible layout remix—not random DOM shuffling. */
+.chaos-mode .quick-nav {
+  border-style: dashed;
+  border-radius: 19px 9px 19px 9px;
+  background: linear-gradient(105deg, rgba(232, 183, 202, 0.06), rgba(245, 217, 141, 0.055));
+}
+.chaos-mode .pip-area {
+  border-radius: 34px 16px 29px 13px;
+  border-style: dashed;
+  background:
+    radial-gradient(ellipse at 18% 30%, rgba(193, 171, 255, 0.12), transparent 31%),
+    radial-gradient(ellipse at 82% 60%, rgba(245, 217, 141, 0.09), transparent 34%),
+    linear-gradient(135deg, rgba(39, 25, 54, 0.68), rgba(26, 18, 39, 0.34));
+}
+.chaos-mode .project-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr));
+  gap: clamp(12px, 2vw, 24px);
+}
+.chaos-mode .project-card:nth-child(1) { transform: rotate(-1.2deg) translateY(5px); }
+.chaos-mode .project-card:nth-child(2) { transform: rotate(1deg) translateY(-4px); }
+.chaos-mode .project-card:nth-child(3) { transform: rotate(-0.7deg) translateY(3px); }
+.chaos-mode .project-card:nth-child(1):hover,
+.chaos-mode .project-card:nth-child(2):hover,
+.chaos-mode .project-card:nth-child(3):hover {
+  z-index: 2;
+  transform: rotate(0) translateY(-5px) scale(1.012);
+}
+.chaos-mode .project-card { border-radius: 23px 12px 20px 10px; }
+.chaos-mode .project-card:nth-child(2) { border-color: rgba(193, 171, 255, 0.34); }
+.chaos-mode .project-card:nth-child(3) { border-color: rgba(245, 217, 141, 0.3); }
+.chaos-mode .dream-ticker { border-style: dashed; border-radius: 18px 8px 16px 8px; }
+.chaos-mode .dream-ritual { border-radius: 28px 12px 31px 14px; border-style: dashed; }
+.chaos-mode .story-scene:nth-child(odd) { border-radius: 22px 11px 20px 10px; }
+.chaos-mode .story-scene:nth-child(even) { border-radius: 11px 22px 10px 20px; }
+.chaos-mode .visitor-odometer strong { border-color: rgba(193, 171, 255, 0.4); color: #d9c9ff; }
+
+.day-mode .visitor-odometer strong { border-color: rgba(86, 54, 101, 0.2); background: rgba(255, 255, 255, 0.7); color: #6d4a81; }
+.day-mode .visit-memory { color: #775c8a !important; border-color: rgba(86, 54, 101, 0.2); }
+.day-mode .chaos-toggle.is-active { background: rgba(232, 183, 202, 0.22); color: #533664; }
+.day-mode :is(button, a, input, textarea, select):focus-visible { outline-color: #8e5876; }
+
+.recipe-save-feedback {
+  margin: 14px 0 0;
+  color: #b7e3bf;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.day-mode .recipe-save-feedback { color: #367548; }
+
+@media (max-width: 900px) {
+  .chaos-mode .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .visitor-odometer { min-width: 0; gap: 6px; }
+  .visitor-odometer > small { display: none; }
+}
+
+@media (max-width: 700px) {
+  .chaos-mode .project-grid { grid-template-columns: 1fr; gap: 16px; }
+  .chaos-mode .project-card:nth-child(1) { transform: rotate(-0.45deg) translateX(2px); }
+  .chaos-mode .project-card:nth-child(2) { transform: rotate(0.4deg) translateX(-2px); }
+  .chaos-mode .project-card:nth-child(3) { transform: rotate(-0.35deg) translateX(1px); }
+  .chaos-mode .project-card:nth-child(1):hover,
+  .chaos-mode .project-card:nth-child(2):hover,
+  .chaos-mode .project-card:nth-child(3):hover { transform: translateY(-3px); }
+  .dream-ticker { grid-template-columns: minmax(0, auto) minmax(0, 1fr); }
+  .visitor-odometer { grid-column: 1 / -1; justify-content: flex-end; padding-top: 3px; }
+  .visitor-odometer > span { font-size: 7px; }
+  .visitor-odometer strong { min-height: 24px; padding: 4px 7px; font-size: 11px; }
+  .header-actions { align-items: center; gap: 7px; }
+  .header-actions .theme-toggle { padding: 9px 10px; font-size: 10px; }
+  .visit-memory { font-size: 7px !important; letter-spacing: 0.35px; }
+}
+
+@media (max-width: 380px) {
+  .chaos-mode .project-card:nth-child(1),
+  .chaos-mode .project-card:nth-child(2),
+  .chaos-mode .project-card:nth-child(3) { transform: none; }
+  .header-actions .theme-toggle { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eye span { transition: none; }
+  .chaos-mode .project-card:nth-child(1),
+  .chaos-mode .project-card:nth-child(2),
+  .chaos-mode .project-card:nth-child(3) { transform: none; }
+}
+
+/* =========================
+   DREAM PASSPORT · CHARACTER REACTIONS · ACCESSIBILITY FINISH
+   ========================= */
+.focus-toggle.is-active {
+  border-color: rgba(245, 217, 141, 0.75);
+  background: linear-gradient(110deg, rgba(232, 183, 202, 0.2), rgba(245, 217, 141, 0.12));
+  color: #fff3dc;
+}
+.focus-mode .dream-ritual {
+  scroll-margin-top: 18px;
+  border-color: rgba(245, 217, 141, 0.72);
+  box-shadow: 0 0 0 2px rgba(245, 217, 141, 0.12), 0 24px 70px rgba(4, 2, 10, 0.22);
+}
+.focus-mode .pip-area,
+.focus-mode .workshop,
+.focus-mode .origin-story {
+  filter: saturate(0.78);
+}
+.day-mode .focus-toggle.is-active {
+  border-color: rgba(142, 88, 118, 0.55);
+  background: rgba(232, 183, 202, 0.28);
+  color: #533664;
+}
+
+/* Pip's face changes gently as the visitor chooses a mood or delivers a dream. */
+.pip-expression-brave .face { transform: rotate(-1.5deg); }
+.pip-expression-brave .eye { height: 40px; top: 48px; }
+.pip-expression-brave .smile { transform: rotate(180deg) scale(1.12); }
+.pip-expression-curious .face { transform: rotate(1.8deg); }
+.pip-expression-curious .eye { top: 43px; height: 48px; }
+.pip-expression-sleepy .eye { transform: scaleY(0.82); transform-origin: center; }
+.pip-expression-delighted .face { animation: pip-delighted 520ms ease-in-out 2; }
+.pip-expression-delighted .nightcap { filter: drop-shadow(0 0 13px rgba(245, 217, 141, 0.7)); }
+.pip-reaction {
+  width: fit-content;
+  max-width: min(520px, 100%);
+  margin: 13px auto 0 !important;
+  padding: 8px 12px;
+  border: 1px dashed rgba(245, 217, 141, 0.25);
+  border-radius: 999px;
+  background: rgba(16, 10, 26, 0.28);
+  color: #f3d7a0 !important;
+  font: 11px/1.5 "DM Mono", monospace !important;
+  letter-spacing: 0.1px;
+}
+@keyframes pip-delighted {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  35% { transform: translateY(-4px) rotate(-2deg); }
+  70% { transform: translateY(1px) rotate(2deg); }
+}
+.day-mode .pip-reaction {
+  border-color: rgba(86, 54, 101, 0.2);
+  background: rgba(255, 255, 255, 0.68);
+  color: #674052 !important;
+}
+
+/* Launch has three readable beats: packing, flight, and a receipt. */
+.courier-rocket.is-preparing { animation: courier-prep 420ms ease-in-out both; }
+@keyframes courier-prep {
+  0%, 100% { transform: translateY(0) rotate(12deg); }
+  35% { transform: translateY(-5px) rotate(3deg); }
+  70% { transform: translateY(1px) rotate(18deg); }
+}
+.courier-sky.flight-active .courier-path { border-top-style: solid; box-shadow: 0 -4px 14px rgba(245, 217, 141, 0.17); }
+.courier-message.preparing { color: #f5d98d; }
+
+.dream-passport {
+  position: relative;
+  max-width: 760px;
+  margin: 24px auto 0;
+  padding: clamp(16px, 3vw, 25px);
+  overflow: hidden;
+  border: 1px solid rgba(245, 217, 141, 0.58);
+  border-radius: 15px;
+  background:
+    radial-gradient(circle at 90% 8%, rgba(245, 217, 141, 0.13), transparent 24%),
+    linear-gradient(135deg, rgba(46, 30, 59, 0.98), rgba(22, 15, 34, 0.98));
+  box-shadow: inset 0 0 0 5px rgba(245, 217, 141, 0.025), 0 16px 34px rgba(5, 3, 12, 0.18);
+  animation: recipe-arrive 420ms ease both;
+  text-align: left;
+}
+.dream-passport::before,
+.dream-passport::after {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border: 1px dashed rgba(232, 183, 202, 0.15);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+.dream-passport::before { top: -72px; left: 28%; }
+.dream-passport::after { right: -68px; bottom: -68px; }
+.passport-topline,
+.passport-bottomline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #c1a9cd;
+  font: 9px/1.5 "DM Mono", monospace;
+  letter-spacing: 0.8px;
+}
+.passport-topline { padding-bottom: 12px; border-bottom: 1px solid rgba(232, 183, 202, 0.17); }
+.passport-main { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 20px 0; }
+.passport-copy { min-width: 0; }
+.passport-copy .panel-kicker { margin: 0; color: #f0c8d9; font-size: 9px; }
+.passport-copy h4 { margin: 8px 0 4px; color: #fff3dc; font-size: clamp(24px, 4vw, 34px); letter-spacing: -0.8px; }
+.passport-dream-title { margin: 0; color: #f5d98d; font-size: 14px; font-weight: 800; }
+.passport-details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 18px 0 0; }
+.passport-details div { min-width: 0; padding: 10px; border: 1px solid rgba(232, 183, 202, 0.12); border-radius: 9px; background: rgba(7, 5, 13, 0.18); }
+.passport-details dt { color: #a893b6; font: 8px/1.4 "DM Mono", monospace; letter-spacing: 0.5px; }
+.passport-details dd { overflow-wrap: anywhere; margin: 5px 0 0; color: #fff3dc; font-size: 12px; font-weight: 800; }
+.passport-stamp {
+  display: grid;
+  flex: 0 0 116px;
+  width: 116px;
+  height: 116px;
+  align-content: center;
+  justify-items: center;
+  border: 2px dashed #edb9cf;
+  border-radius: 50%;
+  color: #edb9cf;
+  text-align: center;
+  transform: rotate(9deg);
+  box-shadow: 0 0 0 6px rgba(232, 183, 202, 0.045), inset 0 0 0 4px rgba(232, 183, 202, 0.05);
+}
+.passport-stamp span { font-size: 23px; line-height: 1.1; }
+.passport-stamp strong { font: 700 10px "DM Mono", monospace; letter-spacing: 0.8px; }
+.passport-stamp small { margin-top: 4px; font: 8px "DM Mono", monospace; letter-spacing: 1px; }
+.passport-bottomline { padding-top: 12px; border-top: 1px dashed rgba(232, 183, 202, 0.17); color: #8f7d9b; }
+.passport-print { margin-top: 14px; }
+.day-mode .dream-passport {
+  border-color: rgba(119, 73, 105, 0.45);
+  background: radial-gradient(circle at 90% 8%, rgba(245, 217, 141, 0.22), transparent 24%), linear-gradient(135deg, #fffaf2, #f5e9f7);
+  box-shadow: inset 0 0 0 5px rgba(142, 88, 118, 0.035), 0 16px 34px rgba(68, 44, 82, 0.08);
+}
+.day-mode .passport-topline,
+.day-mode .passport-bottomline { color: #6c587a; }
+.day-mode .passport-copy .panel-kicker { color: #80516b; }
+.day-mode .passport-copy h4,
+.day-mode .passport-details dd { color: #30223b; }
+.day-mode .passport-dream-title { color: #715016; }
+.day-mode .passport-details div { border-color: rgba(86, 54, 101, 0.16); background: rgba(255, 255, 255, 0.48); }
+.day-mode .passport-details dt { color: #685574; }
+.day-mode .passport-stamp { border-color: #a95d81; color: #a95d81; }
+.day-mode .passport-bottomline { border-color: rgba(86, 54, 101, 0.17); }
+
+/* Light mode contrast pass: retain the lilac/pink/gold palette, but darken small copy. */
+.day-mode .pip-role,
+.day-mode .section-heading p,
+.day-mode .panel-kicker,
+.day-mode .project-index,
+.day-mode .project-card-footer,
+.day-mode .ritual-step legend span,
+.day-mode .recipe-card-topline,
+.day-mode .shelf-note,
+.day-mode .guestbook-form label em,
+.day-mode .guestbook-form-footer > span,
+.day-mode .visitor-odometer > span,
+.day-mode .visitor-odometer > small,
+.day-mode .passport-details dt {
+  color: #655071;
+}
+.day-mode .pip-intro > p:not(.visit-memory):not(.pip-reaction) { color: #72500c; }
+.day-mode .pip-intro small,
+.day-mode .story-heading > span,
+.day-mode .story-scene p,
+.day-mode .panel-copy,
+.day-mode .section-heading-note,
+.day-mode .quick-nav-meta,
+.day-mode .ritual-day-stamp span,
+.day-mode .ritual-day-stamp small,
+.day-mode .shelf-heading > small,
+.day-mode .choice-card small,
+.day-mode .shelf-card > p,
+.day-mode .courier-message {
+  color: #665173;
+}
+.day-mode .daily-prompt small { color: #874e70; }
+.day-mode .section-heading-slash { color: #685574; }
+.day-mode .project-card-footer > span:first-child { color: #655071; }
+.day-mode .quick-nav a:hover,
+.day-mode .quick-nav a:focus-visible { color: #563768; border-color: rgba(86, 54, 101, 0.28); background: rgba(232, 183, 202, 0.18); }
+.day-mode .shelf-card button,
+.day-mode .recipe-send-button { color: #76405d; }
+.day-mode .guestbook-form input::placeholder,
+.day-mode .guestbook-form textarea::placeholder { color: #71607f; }
+.day-mode .guestbook-entry footer,
+.day-mode .guestbook-entry footer strong { color: #6c4860; }
+.day-mode .visitor-odometer > small { color: #655071; }
+
+/* Clear focus and larger touch targets, while respecting the retro visual language. */
+.desktop :is(button, select, input, textarea) { accent-color: #b86f91; }
+.desktop .theme-toggle,
+.desktop .sound-control button,
+.desktop .action-button,
+.desktop .recipe-send-button,
+.desktop .destination-picks button,
+.desktop .ingredient-choice,
+.desktop .choice-card { min-height: 42px; }
+.desktop .pip-reaction,
+.desktop .courier-message,
+.desktop .recipe-message,
+.desktop .guestbook-copy { line-height: 1.65; }
+
+@media (max-width: 700px) {
+  .passport-main { align-items: flex-start; flex-direction: column-reverse; gap: 16px; }
+  .passport-stamp { flex-basis: 88px; width: 88px; height: 88px; align-self: flex-end; }
+  .passport-stamp span { font-size: 18px; }
+  .passport-details { grid-template-columns: 1fr; }
+  .passport-details div { display: grid; grid-template-columns: 95px minmax(0, 1fr); align-items: start; gap: 8px; }
+  .passport-details dd { margin: 0; }
+  .passport-topline, .passport-bottomline { font-size: 8px; }
+  .header-actions .focus-toggle { order: 4; }
+  .focus-mode .dream-ritual { box-shadow: 0 0 0 1px rgba(245, 217, 141, 0.2), 0 14px 38px rgba(4, 2, 10, 0.12); }
+}
+
+@media (max-width: 380px) {
+  .pip-reaction { border-radius: 12px; font-size: 10px !important; }
+  .passport-topline, .passport-bottomline { flex-direction: column; gap: 3px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pip-expression-delighted .face { animation: none; }
+  .courier-rocket.is-preparing { animation: none; }
+  .dream-passport { animation: none; }
+}
+
+/* Printing opens a dedicated, self-contained Dream Passport document. */
+.pip .face,
+.pip .eye,
+.pip .smile { transition: transform 220ms ease, top 220ms ease, height 220ms ease; }
+.day-mode .courier-message.delivered { color: #72500c; }
+
+/* Interaction polish: immediate discovery, confident focus, and rewarding feedback. */
+.secret-note {
+  position: fixed;
+  z-index: 1200;
+  right: clamp(16px, 3vw, 36px);
+  bottom: clamp(16px, 3vw, 36px);
+  width: min(650px, calc(100vw - 32px));
+  max-width: none;
+  margin: 0;
+  border-color: rgba(245, 217, 141, 0.72);
+  background: linear-gradient(125deg, rgba(35, 23, 48, 0.97), rgba(69, 39, 68, 0.97));
+  box-shadow: 0 24px 70px rgba(5, 3, 12, 0.42), 0 0 0 1px rgba(245, 217, 141, 0.08);
+  backdrop-filter: blur(16px);
+}
+.secret-note h3 { margin-top: 2px; }
+.secret-note .panel-close { flex: 0 0 auto; }
+.day-mode .secret-note {
+  border-color: rgba(142, 88, 118, 0.55);
+  background: linear-gradient(125deg, rgba(255, 250, 255, 0.98), rgba(248, 233, 244, 0.98));
+  box-shadow: 0 24px 70px rgba(54, 33, 61, 0.2), 0 0 0 1px rgba(142, 88, 118, 0.08);
+}
+
+.sound-header-toggle[aria-pressed="false"] { opacity: 0.82; }
+.sound-header-toggle[aria-pressed="true"] { border-color: rgba(245, 217, 141, 0.48); }
+
+.dream-recipe-card:focus { outline: none; }
+.dream-recipe-card:focus-visible {
+  outline: 3px solid #f5d98d;
+  outline-offset: 5px;
+}
+.dream-recipe-card.is-reopened {
+  border-color: rgba(245, 217, 141, 0.86);
+  box-shadow: 0 0 0 1px rgba(245, 217, 141, 0.14), 0 0 42px rgba(245, 217, 141, 0.12);
+}
+.reopened-dream-notice {
+  margin: -2px 0 12px;
+  color: #f5d98d;
+  font: 10px/1.6 "DM Mono", monospace;
+  letter-spacing: 0.6px;
+  animation: recipe-arrive 240ms ease both;
+}
+.shelf-card button.is-active {
+  color: #fff3dc;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.day-mode .reopened-dream-notice { color: #75425e; }
+.day-mode .shelf-card button.is-active { color: #533664; }
+
+.courier-arrival-note {
+  margin: 8px 0 0;
+  max-width: 520px;
+  color: #e8b7ca;
+  font-size: 12px;
+  line-height: 1.65;
+  animation: recipe-arrive 320ms ease both;
+}
+.day-mode .courier-arrival-note { color: #76405d; }
+.dream-passport .passport-stamp { animation: passport-stamp-in 520ms cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes passport-stamp-in {
+  0% { opacity: 0; transform: rotate(7deg) scale(1.28); }
+  68% { opacity: 1; transform: rotate(-3deg) scale(.97); }
+  100% { opacity: 1; transform: rotate(0) scale(1); }
+}
+
+@media (max-width: 700px) {
+  .secret-note {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    width: auto;
+    padding: 15px;
+    gap: 10px;
+  }
+  .secret-note > div > p:last-child { font-size: 12px; }
+  .header-actions .sound-header-toggle { order: 0; }
+  .courier-arrival-note { font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reopened-dream-notice,
+  .courier-arrival-note,
+  .dream-passport .passport-stamp { animation: none !important; }
+}
+
+
+/* =========================
+   VISUAL REFINEMENT · DREAM OS 1.1
+   More breathing room and clearer reading while preserving Pip's night-sky identity.
+   ========================= */
+.desktop {
+  padding-inline: clamp(14px, 2.5vw, 40px);
+}
+
+.desktop-header,
+.quick-nav,
+.pip-area,
+.workshop,
+.dream-ticker,
+.origin-story {
+  width: 100%;
+  max-width: 1280px;
+}
+
+.pip-area {
+  padding-inline: clamp(18px, 3.2vw, 48px);
+}
+
+.origin-story {
+  padding-bottom: clamp(30px, 4vw, 52px);
+}
+
+.story-heading {
+  max-width: 940px;
+}
+
+.story-timeline {
+  max-width: 1040px;
+  gap: 20px;
+}
+
+.guestbook {
+  max-width: 1040px;
+}
+
+/* Keep supporting text readable without losing the tiny-computer feel. */
+.desktop .system-label { font-size: 11px; }
+.desktop .brand-subtitle { font-size: 10px; }
+.desktop .quick-nav a { font-size: 11px; }
+.desktop .quick-nav a span { font-size: 10px; }
+.desktop .quick-nav-meta { font-size: 9px; }
+.desktop .ticker-live { font-size: 9px; }
+.desktop .dream-ticker p { font-size: 11px; }
+.desktop .dream-ticker > strong { font-size: 9px; }
+.desktop .section-heading p { font-size: 11px; }
+.desktop .section-heading-note { font-size: 9px; }
+.desktop .project-index,
+.desktop .project-status { font-size: 9px; }
+.desktop .project-description { min-height: 42px; font-size: 14px; line-height: 1.7; }
+.desktop .project-card-footer { font-size: 9px; line-height: 1.5; }
+.desktop .story-heading > p { font-size: 11px; }
+.desktop .story-heading-code { font-size: 9px; }
+.desktop .story-number { font-size: 9px; }
+.desktop .story-progress-label { font-size: 9px; }
+.desktop .ritual-day-stamp span,
+.desktop .ritual-day-stamp small { font-size: 9px; }
+.desktop .ritual-day-stamp strong { font-size: 12px; }
+.desktop .daily-prompt small { font-size: 10px; }
+.desktop .ritual-step legend { font-size: 14px; }
+.desktop .ritual-step legend span { font-size: 10px; }
+.desktop .choice-card strong { font-size: 13px; }
+.desktop .choice-card small { font-size: 11px; line-height: 1.5; }
+.desktop .ingredient-choice,
+.desktop .destination-picks button { font-size: 13px; }
+.desktop .ritual-actions p { font-size: 12px; }
+.desktop .recipe-card-topline { font-size: 9px; }
+.desktop .recipe-tags span { font-size: 10px; }
+.desktop .shelf-heading > small { font-size: 11px; }
+.desktop .shelf-card > p { font-size: 9px; }
+.desktop .shelf-card button { font-size: 11px; }
+.desktop .shelf-note { font-size: 9px; line-height: 1.65; }
+.desktop .guestbook-form label > span { font-size: 12px; }
+.desktop .guestbook-form label em { font-size: 10px; }
+.desktop .guestbook-form-footer > span { font-size: 9px; }
+.desktop .guestbook-empty { font-size: 12px; }
+.desktop .guestbook-entry p { font-size: 14px; }
+.desktop .guestbook-entry footer { font-size: 9px; }
+.desktop .visit-memory { font-size: 9px !important; }
+.desktop .visitor-odometer > span,
+.desktop .visitor-odometer > small { font-size: 8px; }
+
+/* The Ritual gets a focused two-column workspace only after a recipe exists. */
+.dream-ritual {
+  display: grid;
+  width: 100%;
+  max-width: 1320px;
+  margin: clamp(34px, 4vw, 58px) auto 0;
+  grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
+  grid-template-areas:
+    "heading heading"
+    "prompt prompt"
+    "steps recipe"
+    "actions recipe"
+    "shelf shelf";
+  align-items: start;
+  column-gap: clamp(22px, 3vw, 38px);
+  row-gap: 0;
+}
+
+.ritual-heading { grid-area: heading; }
+.daily-prompt { grid-area: prompt; }
+.ritual-steps { grid-area: steps; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+.ritual-actions { grid-area: actions; align-self: end; }
+.dream-shelf { grid-area: shelf; min-width: 0; }
+
+.dream-ritual:not(.has-recipe) {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "heading"
+    "prompt"
+    "steps"
+    "actions"
+    "shelf";
+}
+
+.dream-ritual.has-recipe .dream-recipe-card {
+  grid-area: recipe;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+  align-self: start;
+}
+
+.dream-ritual.has-recipe .mood-choices {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dream-ritual.has-recipe .choice-card {
+  min-height: 108px;
+  padding: 12px;
+}
+
+.dream-ritual.has-recipe .recipe-card-art {
+  gap: clamp(14px, 2vw, 32px);
+  margin: 12px 0;
+  padding: 12px 6px;
+}
+
+.dream-ritual.has-recipe .recipe-card-art span { font-size: 24px; }
+.dream-ritual.has-recipe .dream-recipe-card h3 { font-size: clamp(22px, 2.5vw, 28px); }
+.dream-ritual.has-recipe .recipe-message { font-size: 14px; line-height: 1.75; }
+
+/* Make the active Chaos Mode feel like a little dream-world remix, not broken layout. */
+.chaos-mode .project-card {
+  isolation: isolate;
+  border-color: rgba(232, 183, 202, 0.32);
+}
+
+.chaos-mode .project-card::before {
+  position: absolute;
+  z-index: 2;
+  top: 56px;
+  right: 12px;
+  max-width: 43%;
+  padding: 5px 7px;
+  border: 1px dashed rgba(245, 217, 141, 0.52);
+  border-radius: 9px 5px 8px 5px;
+  background: rgba(17, 11, 27, 0.78);
+  color: #f5d98d;
+  font: 8px/1.35 "DM Mono", monospace;
+  letter-spacing: 0.6px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.chaos-mode .project-card:nth-child(1)::before { content: "EXTRA TWINKLE"; transform: rotate(3deg); }
+.chaos-mode .project-card:nth-child(2)::before { content: "SOFT GLOW"; transform: rotate(-3deg); }
+.chaos-mode .project-card:nth-child(3)::before { content: "DELIVERY CHAOS"; transform: rotate(2deg); }
+.chaos-mode .project-card:nth-child(1) .project-icon { transform: rotate(-5deg); }
+.chaos-mode .project-card:nth-child(2) .project-icon { transform: rotate(4deg); }
+.chaos-mode .project-card:nth-child(3) .project-icon { transform: rotate(-4deg); }
+.chaos-mode .dream-ritual { box-shadow: 0 0 0 1px rgba(245, 217, 141, 0.08), 0 24px 60px rgba(4, 2, 10, 0.16); }
+
+/* Increase contrast in the light theme for labels that otherwise fade into lilac. */
+.day-mode .project-description,
+.day-mode .story-scene p,
+.day-mode .guestbook-entry p,
+.day-mode .recipe-message { color: #51405d; }
+.day-mode .ritual-actions p,
+.day-mode .shelf-note,
+.day-mode .guestbook-empty,
+.day-mode .guestbook-form-footer > span,
+.day-mode .ritual-day-stamp span,
+.day-mode .ritual-day-stamp small { color: #5f4a6c; }
+.day-mode .choice-card small,
+.day-mode .shelf-card > p,
+.day-mode .section-heading-note,
+.day-mode .quick-nav-meta { color: #665173; }
+
+@media (max-width: 1050px) {
+  .desktop-header,
+  .quick-nav,
+  .pip-area,
+  .workshop,
+  .dream-ticker,
+  .origin-story { max-width: 100%; }
+
+  .dream-ritual.has-recipe {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "heading"
+      "prompt"
+      "steps"
+      "actions"
+      "recipe"
+      "shelf";
+  }
+
+  .dream-ritual.has-recipe .dream-recipe-card { margin-top: 10px; }
+  .dream-ritual.has-recipe .ritual-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dream-ritual.has-recipe .ritual-destination-step { grid-column: 1 / -1; }
+}
+
+@media (max-width: 700px) {
+  .desktop { padding-inline: 12px; }
+  .desktop-header,
+  .quick-nav,
+  .pip-area,
+  .workshop,
+  .dream-ticker,
+  .origin-story { max-width: 100%; }
+  .desktop .project-description { font-size: 13px; }
+  .desktop .guestbook-entry p { font-size: 13px; }
+  .story-timeline { max-width: 100%; }
+  .story-scene { grid-template-columns: 30px 58px minmax(0, 1fr); gap: 10px; padding: 15px; }
+  .story-illustration { width: 54px; height: 54px; font-size: 26px; }
+  .story-timeline::before { left: 18px; }
+  .dream-ritual { padding: 18px; }
+  .dream-ritual.has-recipe .ritual-steps { grid-template-columns: minmax(0, 1fr); }
+  .dream-ritual.has-recipe .mood-choices { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .dream-ritual.has-recipe .choice-card { min-height: 100px; padding: 10px; }
+  .dream-ritual.has-recipe .recipe-tags { gap: 6px; }
+  .dream-ritual.has-recipe .recipe-tags span { font-size: 10px; }
+  .chaos-mode .project-card::before { top: 50px; right: 9px; font-size: 7px; }
+  .dream-ritual .ritual-actions { align-items: stretch; flex-direction: column; }
+  .dream-ritual .ritual-create-button { width: 100%; }
+}
+
+@media (max-width: 420px) {
+  .dream-ritual.has-recipe .mood-choices { grid-template-columns: minmax(0, 1fr); }
+  .dream-ritual.has-recipe .choice-card { min-height: 84px; }
+  .ritual-heading { flex-direction: column; }
+  .ritual-day-stamp { align-self: flex-start; }
+  .shelf-heading { align-items: flex-start; flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chaos-mode .project-card:nth-child(1) .project-icon,
+  .chaos-mode .project-card:nth-child(2) .project-icon,
+  .chaos-mode .project-card:nth-child(3) .project-icon { transform: none; }
+  .chaos-mode .project-card::before { transform: none !important; }
+}
