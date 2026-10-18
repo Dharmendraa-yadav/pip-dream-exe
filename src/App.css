@@ -1721,3 +1721,119 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .pip { animation: none; }
 }
+
+/* Personal dream ritual: the site's signature repeat-visit loop */
+.dream-ritual {
+  position: relative;
+  margin-top: 58px;
+  padding: clamp(20px, 4vw, 38px);
+  overflow: hidden;
+  border: 1px solid rgba(245, 217, 141, 0.25);
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse at 100% 0, rgba(184, 111, 145, 0.16), transparent 42%),
+    radial-gradient(ellipse at 0 100%, rgba(125, 94, 174, 0.12), transparent 45%),
+    rgba(20, 14, 32, 0.58);
+  box-shadow: 0 24px 60px rgba(4, 2, 10, 0.12);
+}
+.dream-ritual::before { content: "✦"; position: absolute; top: 26px; right: 29%; color: rgba(245, 217, 141, 0.55); font-size: 18px; pointer-events: none; }
+.ritual-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.ritual-heading h2 { margin: 7px 0 8px; color: #fff3dc; font-size: clamp(24px, 3.4vw, 34px); letter-spacing: -1px; }
+.ritual-heading > div:first-child > p:last-child { margin: 0; color: #b9aabd; font-size: 13px; line-height: 1.6; }
+.ritual-day-stamp { display: grid; flex: 0 0 auto; gap: 5px; min-width: 140px; padding: 13px; border: 1px dashed rgba(245, 217, 141, 0.3); border-radius: 12px; background: rgba(12, 8, 20, 0.28); }
+.ritual-day-stamp span, .ritual-day-stamp small { color: #8f7d9b; font: 8px "DM Mono", monospace; letter-spacing: 0.7px; }
+.ritual-day-stamp strong { color: #f5d98d; font: 11px "DM Mono", monospace; }
+.daily-prompt { display: flex; align-items: center; gap: 14px; margin: 24px 0 26px; padding: 16px 18px; border: 1px solid rgba(232, 183, 202, 0.15); border-radius: 13px; background: linear-gradient(100deg, rgba(232, 183, 202, 0.08), rgba(245, 217, 141, 0.035)); }
+.daily-prompt > span { display: grid; flex: 0 0 38px; width: 38px; height: 38px; place-items: center; border: 1px solid rgba(245, 217, 141, 0.25); border-radius: 12px; color: #f5d98d; font-size: 23px; }
+.daily-prompt small { color: #e8b7ca; font: 8px "DM Mono", monospace; letter-spacing: 0.9px; }
+.daily-prompt p { margin: 5px 0 0; color: #f3e8f1; font-size: 14px; line-height: 1.55; }
+.ritual-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.ritual-step { min-width: 0; margin: 0; padding: 0; border: 0; }
+.ritual-step legend { width: 100%; margin-bottom: 13px; color: #f1e4ef; font-size: 12px; font-weight: 800; }
+.ritual-step legend span { display: inline-grid; width: 25px; height: 25px; margin-right: 7px; place-items: center; border: 1px solid rgba(232, 183, 202, 0.28); border-radius: 8px; color: #f5d98d; font: 9px "DM Mono", monospace; }
+.choice-grid { display: grid; gap: 9px; }
+.mood-choices { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.choice-card { display: flex; min-width: 0; min-height: 116px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 6px; padding: 13px; border: 1px solid rgba(232, 183, 202, 0.16); border-radius: 12px; background: rgba(12, 8, 20, 0.3); color: #f3e8f1; text-align: left; cursor: pointer; transition: border-color 180ms ease, background 180ms ease, transform 180ms ease; }
+.choice-card:hover, .ingredient-choice:hover, .destination-picks button:hover { transform: translateY(-2px); border-color: rgba(245, 217, 141, 0.45); }
+.choice-card.is-chosen, .ingredient-choice.is-chosen, .destination-picks button.is-chosen { border-color: rgba(245, 217, 141, 0.72); background: linear-gradient(145deg, rgba(245, 217, 141, 0.13), rgba(232, 183, 202, 0.08)); box-shadow: inset 0 0 0 1px rgba(245, 217, 141, 0.07), 0 0 24px rgba(245, 217, 141, 0.035); }
+.choice-icon { color: #f5d98d; font-size: 23px; }
+.choice-card strong { font-size: 11px; }
+.choice-card small { color: #9e8da7; font-size: 9px; line-height: 1.4; }
+.ingredient-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ingredient-choice { display: flex; min-width: 0; align-items: center; gap: 9px; padding: 12px; border: 1px solid rgba(232, 183, 202, 0.16); border-radius: 10px; background: rgba(12, 8, 20, 0.3); color: #e8dbe9; font-size: 11px; text-align: left; cursor: pointer; transition: border-color 180ms ease, background 180ms ease, transform 180ms ease; }
+.ingredient-choice > span { font-size: 19px; }
+.ritual-destination-step { grid-column: 1 / -1; }
+.destination-picks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.destination-picks button { padding: 11px 12px; border: 1px solid rgba(232, 183, 202, 0.16); border-radius: 10px; background: rgba(12, 8, 20, 0.3); color: #d7c9dc; font-size: 11px; cursor: pointer; transition: border-color 180ms ease, background 180ms ease, transform 180ms ease; }
+.ritual-actions { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(232, 183, 202, 0.12); }
+.ritual-actions p { margin: 0; color: #8f7d9b; font-size: 10px; line-height: 1.6; }
+.ritual-create-button { flex: 0 0 auto; }
+.dream-recipe-card { position: relative; max-width: 680px; margin: 26px auto 0; padding: clamp(18px, 3vw, 28px); overflow: hidden; border: 1px solid rgba(245, 217, 141, 0.4); border-radius: 17px; background: radial-gradient(ellipse at 50% 0, rgba(245, 217, 141, 0.12), transparent 43%), linear-gradient(145deg, rgba(56, 35, 69, 0.88), rgba(20, 14, 32, 0.94)); animation: recipe-arrive 450ms ease both; }
+@keyframes recipe-arrive { from { opacity: 0; transform: translateY(10px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.recipe-card-topline { display: flex; justify-content: space-between; gap: 12px; color: #9e8da7; font: 8px "DM Mono", monospace; letter-spacing: 0.8px; }
+.recipe-card-art { display: flex; align-items: center; justify-content: center; gap: clamp(20px, 7vw, 70px); margin: 18px 0; padding: 15px; border-radius: 12px; background: radial-gradient(ellipse at center, rgba(245, 217, 141, 0.14), transparent 64%); color: #f5d98d; }
+.recipe-card-art span { font-size: 28px; }
+.recipe-card-art i { color: #e8b7ca; font-size: 20px; font-style: normal; animation: recipe-twinkle 1.8s ease-in-out infinite alternate; }
+.recipe-card-art b { color: #c1abff; font-size: 23px; font-weight: 400; }
+@keyframes recipe-twinkle { from { opacity: 0.4; transform: scale(0.8) rotate(-12deg); } to { opacity: 1; transform: scale(1.15) rotate(12deg); } }
+.dream-recipe-card h3 { margin: 7px 0 9px; color: #fff3dc; font-size: clamp(22px, 3.5vw, 30px); letter-spacing: -0.7px; }
+.recipe-message { margin: 0; color: #d7c9dc; font-size: 13px; line-height: 1.8; }
+.recipe-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
+.recipe-tags span { padding: 6px 9px; border: 1px solid rgba(232, 183, 202, 0.2); border-radius: 999px; color: #e8b7ca; font-size: 9px; }
+.recipe-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; padding-top: 17px; border-top: 1px solid rgba(232, 183, 202, 0.13); }
+.recipe-send-button { padding: 11px 15px; border: 1px solid rgba(245, 217, 141, 0.36); border-radius: 999px; background: transparent; color: #f5d98d; font-size: 11px; font-weight: 800; cursor: pointer; }
+.recipe-send-button:hover { background: rgba(245, 217, 141, 0.08); }
+.dream-shelf { margin-top: 28px; padding-top: 23px; border-top: 1px dashed rgba(232, 183, 202, 0.18); }
+.shelf-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+.shelf-heading h3 { margin: 4px 0 0; color: #fff3dc; font-size: 20px; }
+.shelf-heading h3 span { margin-left: 6px; color: #8f7d9b; font: 9px "DM Mono", monospace; }
+.shelf-heading > small { color: #8f7d9b; font-size: 10px; }
+.shelf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.shelf-card { min-width: 0; padding: 14px; border: 1px solid rgba(232, 183, 202, 0.14); border-radius: 12px; background: rgba(12, 8, 20, 0.22); }
+.shelf-card-icons { display: flex; justify-content: space-between; font-size: 17px; }
+.shelf-card > p { margin: 10px 0 5px; color: #8f7d9b; font: 8px "DM Mono", monospace; }
+.shelf-card h4 { margin: 0 0 12px; color: #f3e8f1; font-size: 14px; }
+.shelf-card button { padding: 0; border: 0; background: transparent; color: #f5d98d; font-size: 10px; cursor: pointer; }
+.shelf-card button:hover { text-decoration: underline; }
+.shelf-empty { margin: 0; padding: 20px; border: 1px dashed rgba(232, 183, 202, 0.16); border-radius: 12px; color: #9e8da7; font-size: 11px; text-align: center; }
+.shelf-note { margin: 11px 0 0; color: #75647f; font: 8px/1.5 "DM Mono", monospace; }
+.day-mode .dream-ritual { border-color: rgba(86, 54, 101, 0.18); background: radial-gradient(ellipse at 100% 0, rgba(184, 111, 145, 0.12), transparent 42%), rgba(255, 250, 255, 0.68); }
+.day-mode .ritual-heading h2, .day-mode .dream-recipe-card h3, .day-mode .shelf-heading h3 { color: #30223b; }
+.day-mode .ritual-heading > div:first-child > p:last-child, .day-mode .ritual-actions p { color: #685574; }
+.day-mode .ritual-day-stamp { border-color: rgba(86, 54, 101, 0.2); background: rgba(255,255,255,0.5); }
+.day-mode .ritual-day-stamp span, .day-mode .ritual-day-stamp small, .day-mode .shelf-heading > small { color: #82718d; }
+.day-mode .ritual-day-stamp strong { color: #8e5876; }
+.day-mode .daily-prompt { border-color: rgba(86, 54, 101, 0.14); background: rgba(255,255,255,0.55); }
+.day-mode .daily-prompt p, .day-mode .ritual-step legend, .day-mode .choice-card, .day-mode .ingredient-choice, .day-mode .destination-picks button { color: #4c3658; }
+.day-mode .daily-prompt small { color: #8e5876; }
+.day-mode .choice-card, .day-mode .ingredient-choice, .day-mode .destination-picks button { border-color: rgba(86, 54, 101, 0.15); background: rgba(255,255,255,0.48); }
+.day-mode .choice-card small { color: #82718d; }
+.day-mode .choice-card.is-chosen, .day-mode .ingredient-choice.is-chosen, .day-mode .destination-picks button.is-chosen { border-color: rgba(142, 88, 118, 0.6); background: rgba(232, 183, 202, 0.22); }
+.day-mode .dream-recipe-card { border-color: rgba(86, 54, 101, 0.22); background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(247,235,249,0.9)); }
+.day-mode .recipe-message, .day-mode .shelf-card h4 { color: #554262; }
+.day-mode .recipe-tags span { border-color: rgba(86, 54, 101, 0.18); color: #8e5876; }
+.day-mode .shelf-card { border-color: rgba(86, 54, 101, 0.14); background: rgba(255,255,255,0.45); }
+.day-mode .shelf-card button { color: #8e5876; }
+.day-mode .shelf-empty { border-color: rgba(86, 54, 101, 0.18); color: #82718d; }
+@media (max-width: 700px) {
+  .dream-ritual { margin-top: 38px; padding: 18px; border-radius: 17px; }
+  .ritual-heading { flex-direction: column; gap: 15px; }
+  .ritual-day-stamp { min-width: 0; width: 100%; grid-template-columns: auto 1fr; align-items: center; }
+  .ritual-day-stamp small { grid-column: 1 / -1; }
+  .ritual-steps { grid-template-columns: 1fr; gap: 20px; }
+  .ritual-destination-step { grid-column: auto; }
+  .mood-choices { grid-template-columns: 1fr; }
+  .choice-card { min-height: 0; display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 3px 8px; }
+  .choice-icon { grid-row: span 2; }
+  .choice-card small { grid-column: 2; }
+  .destination-picks { grid-template-columns: 1fr; }
+  .ritual-actions { align-items: stretch; flex-direction: column; }
+  .ritual-create-button { width: 100%; }
+  .recipe-actions { flex-direction: column; }
+  .recipe-actions button { width: 100%; }
+  .shelf-heading { align-items: flex-start; flex-direction: column; gap: 6px; }
+  .shelf-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dream-recipe-card, .recipe-card-art i { animation: none; }
+}

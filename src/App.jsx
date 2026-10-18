@@ -1,6 +1,33 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
+const dreamMoods = [
+  { id: "rest", label: "I need rest", icon: "☾", word: "gentle", line: "A quiet place where nothing needs to be solved." },
+  { id: "courage", label: "I need courage", icon: "✦", word: "brave", line: "A small light that reminds you that you can begin." },
+  { id: "wonder", label: "I need wonder", icon: "✧", word: "curious", line: "A hidden door, a new sky, and one impossible little thing." },
+];
+
+const dreamIngredients = [
+  { id: "moon-dust", label: "Moon dust", icon: "🌙", detail: "a silver path through the quiet" },
+  { id: "cloud-pillow", label: "Cloud pillow", icon: "☁️", detail: "a soft landing after a long day" },
+  { id: "warm-rain", label: "Warm rain", icon: "☔", detail: "the sound of the world slowing down" },
+  { id: "star-seed", label: "Star seed", icon: "🌟", detail: "one tiny possibility ready to grow" },
+];
+
+const dailyDreamPrompts = [
+  "What would you leave glowing for someone who feels lost?",
+  "If your worries could float away, what shape would they take?",
+  "Which tiny thing made today worth keeping?",
+  "What would you tell a star that is afraid of the dark?",
+  "Imagine a door that only opens when you are kind to yourself.",
+  "What would your perfect little cloud carry for you?",
+  "If tomorrow arrived as a gift, what would you hope was inside?",
+];
+
+function getLocalDayKey(date = new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
 function App() {
   const [started, setStarted] = useState(false);
   const [lullabyPlaying, setLullabyPlaying] = useState(false);
@@ -15,6 +42,21 @@ function App() {
   const [secretFound, setSecretFound] = useState(false);
   const [guestbookName, setGuestbookName] = useState("");
   const [guestbookMessage, setGuestbookMessage] = useState("");
+  const [ritualMood, setRitualMood] = useState("rest");
+  const [ritualIngredient, setRitualIngredient] = useState("moon-dust");
+  const [ritualDestination, setRitualDestination] = useState("Moon Garden");
+  const [generatedDream, setGeneratedDream] = useState(null);
+  const [dreamShelf, setDreamShelf] = useState(() => {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem("pip-dream-shelf") || "[]");
+      return Array.isArray(saved) ? saved.filter((item) => item && typeof item.id === "string" && typeof item.title === "string" && typeof item.message === "string").slice(0, 4) : [];
+    } catch {
+      return [];
+    }
+  });
+  const todayKey = getLocalDayKey();
+  const dayNumber = Math.floor(new Date(`${todayKey}T12:00:00`).getTime() / 86400000);
+  const dailyDreamPrompt = dailyDreamPrompts[((dayNumber % dailyDreamPrompts.length) + dailyDreamPrompts.length) % dailyDreamPrompts.length];
   const [guestbookEntries, setGuestbookEntries] = useState(() => {
     try {
       const savedEntries = window.localStorage.getItem("pip-dream-guestbook");
@@ -148,6 +190,50 @@ function App() {
     }
     setGuestbookName("");
     setGuestbookMessage("");
+  };
+
+  const createDreamRecipe = () => {
+    const mood = dreamMoods.find((item) => item.id === ritualMood) || dreamMoods[0];
+    const ingredient = dreamIngredients.find((item) => item.id === ritualIngredient) || dreamIngredients[0];
+    const titles = {
+      rest: ["The Quiet Between Stars", "A Blanket for the Moon", "The Slow-Down Garden"],
+      courage: ["A Pocketful of Brave", "The Little Lantern Route", "The First Step Comet"],
+      wonder: ["The Door Behind the Cloud", "A Map of Almost-Magic", "The Curious Star Parade"],
+    };
+    const titleOptions = titles[mood.id] || titles.rest;
+    const titleIndex = (ingredient.id.length + dayNumber) % titleOptions.length;
+    const recipe = {
+      id: `${Date.now()}-${Math.random().toString(16).slice(2, 7)}`,
+      dayKey: todayKey,
+      dateLabel: new Date().toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+      mood: mood.label,
+      moodId: mood.id,
+      moodIcon: mood.icon,
+      ingredient: ingredient.label,
+      ingredientIcon: ingredient.icon,
+      destination: ritualDestination,
+      title: titleOptions[titleIndex],
+      message: `${mood.line} Add ${ingredient.detail}, then follow Pip's tiny lanterns to ${ritualDestination}.`,
+    };
+    setGeneratedDream(recipe);
+  };
+
+  const saveDreamRecipe = () => {
+    if (!generatedDream) return;
+    const nextShelf = [generatedDream, ...dreamShelf.filter((item) => item.id !== generatedDream.id)].slice(0, 4);
+    setDreamShelf(nextShelf);
+    try {
+      window.localStorage.setItem("pip-dream-shelf", JSON.stringify(nextShelf));
+    } catch {
+      // The ritual remains available in the current view if storage is unavailable.
+    }
+  };
+
+  const sendRitualDream = () => {
+    if (!generatedDream) return;
+    setDestination(generatedDream.destination);
+    openProject("courier");
+    document.getElementById("workshop")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const handlePipTap = () => {
@@ -285,7 +371,8 @@ function App() {
       <nav className="quick-nav" aria-label="Main navigation">
         <a href="#profile"><span>01</span> PROFILE</a>
         <a href="#workshop"><span>02</span> WORKSHOP</a>
-        <a href="#origin-story"><span>03</span> DREAM LOG</a>
+        <a href="#dream-ritual"><span>03</span> DREAM RITUAL</a>
+        <a href="#origin-story"><span>04</span> DREAM LOG</a>
         <span className="quick-nav-meta"><i aria-hidden="true" /> BUILD 1.0 · 3 MODULES</span>
       </nav>
 
@@ -495,6 +582,91 @@ function App() {
           <button onClick={toggleSound} aria-pressed={soundEnabled}>
             {soundEnabled ? "🔊 Sound ON" : "🔇 Sound OFF"}
           </button>
+        </div>
+      </section>
+
+      <section className="dream-ritual" id="dream-ritual" aria-labelledby="ritual-heading">
+        <div className="ritual-heading">
+          <div>
+            <p className="panel-kicker">PERSONAL MODULE · RITUAL 001</p>
+            <h2 id="ritual-heading">Make a dream that feels like yours.</h2>
+            <p>Three tiny choices. One small world to take with you.</p>
+          </div>
+          <div className="ritual-day-stamp"><span>TONIGHT&apos;S SEED</span><strong>{todayKey}</strong><small>NEW PROMPT EACH DAY</small></div>
+        </div>
+
+        <div className="daily-prompt"><span aria-hidden="true">✧</span><div><small>PIP&apos;S QUESTION OF THE DAY</small><p>{dailyDreamPrompt}</p></div></div>
+
+        <div className="ritual-steps">
+          <fieldset className="ritual-step">
+            <legend><span>01</span> How are you arriving tonight?</legend>
+            <div className="choice-grid mood-choices">
+              {dreamMoods.map((mood) => (
+                <button key={mood.id} type="button" className={`choice-card ${ritualMood === mood.id ? "is-chosen" : ""}`} onClick={() => setRitualMood(mood.id)} aria-pressed={ritualMood === mood.id}>
+                  <span className="choice-icon" aria-hidden="true">{mood.icon}</span><strong>{mood.label}</strong><small>{mood.id === "rest" ? "let the day soften" : mood.id === "courage" ? "take one small step" : "follow a little wonder"}</small>
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="ritual-step">
+            <legend><span>02</span> Add one ingredient to your dream.</legend>
+            <div className="choice-grid ingredient-choices">
+              {dreamIngredients.map((ingredient) => (
+                <button key={ingredient.id} type="button" className={`ingredient-choice ${ritualIngredient === ingredient.id ? "is-chosen" : ""}`} onClick={() => setRitualIngredient(ingredient.id)} aria-pressed={ritualIngredient === ingredient.id}>
+                  <span aria-hidden="true">{ingredient.icon}</span>{ingredient.label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="ritual-step ritual-destination-step">
+            <legend><span>03</span> Where should Pip send it?</legend>
+            <div className="destination-picks">
+              {["Moon Garden", "Cloud Harbor", "Star Library"].map((place) => (
+                <button key={place} type="button" className={ritualDestination === place ? "is-chosen" : ""} onClick={() => setRitualDestination(place)} aria-pressed={ritualDestination === place}>{place}</button>
+              ))}
+            </div>
+          </fieldset>
+        </div>
+
+        <div className="ritual-actions">
+          <p>Your choices stay on this device. No account, no pressure—just a little ritual.</p>
+          <button type="button" className="action-button ritual-create-button" onClick={createDreamRecipe}>Make my dream ✦</button>
+        </div>
+
+        {generatedDream && (
+          <article className="dream-recipe-card" aria-live="polite">
+            <div className="recipe-card-topline"><span>YOUR DREAM RECIPE</span><span>{generatedDream.dateLabel}</span></div>
+            <div className="recipe-card-art" aria-hidden="true"><span>{generatedDream.ingredientIcon}</span><i>✦</i><b>{generatedDream.moodIcon}</b><span>☾</span></div>
+            <p className="panel-kicker">A LITTLE DREAM FOR {generatedDream.mood.toUpperCase()}</p>
+            <h3>{generatedDream.title}</h3>
+            <p className="recipe-message">{generatedDream.message}</p>
+            <div className="recipe-tags"><span>{generatedDream.mood}</span><span>{generatedDream.ingredient}</span><span>{generatedDream.destination}</span></div>
+            <div className="recipe-actions">
+              <button type="button" className="action-button" onClick={saveDreamRecipe}>Save to dream shelf ♡</button>
+              <button type="button" className="recipe-send-button" onClick={sendRitualDream}>Send with Pip ↗</button>
+            </div>
+          </article>
+        )}
+
+        <div className="dream-shelf">
+          <div className="shelf-heading"><div><p className="panel-kicker">YOUR LOCAL COLLECTION</p><h3>Dream shelf <span>{dreamShelf.length}/4</span></h3></div><small>Little worlds you chose to keep</small></div>
+          {dreamShelf.length ? (
+            <div className="shelf-grid">
+              {dreamShelf.map((dream) => (
+                <article className="shelf-card" key={dream.id}>
+                  <div className="shelf-card-icons" aria-hidden="true"><span>{dream.ingredientIcon || "✦"}</span><span>{dream.moodIcon || "☾"}</span></div>
+                  <p>{dream.dateLabel || "Saved dream"} · {dream.destination}</p>
+                  <h4>{dream.title}</h4>
+                  <button type="button" onClick={() => { setGeneratedDream(dream); setRitualDestination(dream.destination); }}>Open this dream ↗</button>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="shelf-empty">Your shelf is waiting for its first little world. Make a dream and save it here ✧</p>
+          )}
+          <p className="shelf-note">Stored in this browser only · Clear browser data and these saved dreams may disappear.</p>
         </div>
       </section>
 
