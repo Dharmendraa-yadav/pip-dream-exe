@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import SkullBabyAvatar from "./components/SkullBabyAvatar.jsx";
+import useSparkleTrail from "./hooks/useSparkleTrail.js";
 import "./App.css";
 
 const dreamMoods = [
@@ -163,6 +165,7 @@ function App() {
   const [guestbookName, setGuestbookName] = useState("");
   const [guestbookMessage, setGuestbookMessage] = useState("");
   const [ritualMood, setRitualMood] = useState("rest");
+  const { trailLayer } = useSparkleTrail({ enabled: started });
   const [ritualIngredient, setRitualIngredient] = useState("moon-dust");
   const [ritualDestination, setRitualDestination] = useState("Moon Garden");
   const [generatedDream, setGeneratedDream] = useState(null);
@@ -549,7 +552,9 @@ function App() {
   }
 
   return (
-    <main className={`desktop ${dayMode ? "day-mode" : ""} ${chaosMode ? "chaos-mode" : ""} ${focusMode ? "focus-mode" : ""}`}>
+    <>
+      {trailLayer}
+      <main className={`desktop ${dayMode ? "day-mode" : ""} ${chaosMode ? "chaos-mode" : ""} ${focusMode ? "focus-mode" : ""}`}>
       <a className="skip-link" href="#workshop">Skip to the workshop</a>
       <div ref={cursorSparkleRef} className="cursor-sparkle" aria-hidden="true">✦</div>
       <header className="desktop-header">
@@ -626,15 +631,7 @@ function App() {
           aria-label={`Pip, a little dream engineer, currently ${pipExpression}. Tap five times to find a secret.`}
           onClick={handlePipTap}
         >
-          <div className="nightcap" aria-hidden="true">
-            <span>★</span><span>✦</span><span>★</span>
-          </div>
-          <div className="face">
-            <div className="eye left-eye"><span /></div>
-            <div className="eye right-eye"><span /></div>
-            <div className="smile">⌣</div>
-          </div>
-          <div className="bow" aria-hidden="true">🎀</div>
+          <SkullBabyAvatar expression={pipExpression} />
         </button>
 
         <div className="pip-intro">
@@ -661,8 +658,8 @@ function App() {
       <div className="dream-ticker" aria-label="Dream system status">
         <span className="ticker-live"><i aria-hidden="true" /> SIGNAL ONLINE</span>
         <p>Every little dream deserves a safe journey <span aria-hidden="true">✦</span> take what you need, leave a little wonder.</p>
-        <div className="visitor-odometer" title="Dream activity is counted locally in this browser, not shared across visitors." aria-label={`Dream activity counter: ${dreamActivityCount} events recorded in this browser`} aria-live="polite" aria-atomic="true">
-          <span>DREAMS SIMULATED</span>
+        <div className="visitor-odometer" title="Counts dream compilations and first-time shelf saves in this browser only; not a global visitor count." aria-label={`Dream activity counter: ${dreamActivityCount} local activity events recorded in this browser`} aria-live="polite" aria-atomic="true">
+          <span>DREAM ACTIVITY</span>
           <strong key={dreamActivityCount} aria-hidden="true">{String(dreamActivityCount).padStart(6, "0").slice(-6).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</strong>
           <small>THIS DEVICE</small>
         </div>
@@ -1039,11 +1036,12 @@ function App() {
         )}
         <footer className="site-credits">
           <span>MADE UNDER A FRIENDLY NIGHT SKY</span>
-          <span>CSS-DRAWN PIP · NUNITO + DM MONO / GOOGLE FONTS</span>
+          <span>SVG PIP · NUNITO + DM MONO / GOOGLE FONTS</span>
           <span>PIP:// DREAM.EXE · MIDNIGHT NURSERY SYSTEMS</span>
         </footer>
       </section>
-    </main>
+      </main>
+    </>
   );
 }
 

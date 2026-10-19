@@ -15,7 +15,7 @@
 ## Experience and features
 
 - **Dream-mode boot screen** introduces the retro-computer world.
-- **Pip profile and hidden interaction** present Pip as a sleepy junior dream engineer, with a small discovery for curious visitors.
+- **Pip profile and hidden interaction** present Pip as the skull-faced baby Junior Dream Engineer, with a small discovery for curious visitors.
 - **Lullaby Lab** plays a short melody synthesized in the browser with the Web Audio API.
 - **Nightlight Studio** lets visitors adjust a soft glow and switch it on or off.
 - **Dream Courier** offers destination selection, an animated rocket delivery, and delivery feedback.
@@ -23,8 +23,8 @@
 - **Dream Ritual** combines a selected mood, ingredient, and destination into a personalized dream recipe using local templates.
 - **Dream Shelf** stores a small collection of recipes so they can be reopened in the same browser.
 - **Dreambook** lets visitors leave a short note stored locally in their browser.
-- **Dream activity odometer** records local dream activity; it is not a global visitor counter.
-- **Day/night theme and shared sound control** support the visual and audio experience.
+- **Dream activity odometer** counts dream compilations and first-time shelf saves locally; it is not a global visitor counter.
+- **Day/night theme, shared sound control, and a bounded sparkle cursor trail** support the visual and audio experience.
 - **Origin story** reveals Pip’s story across three scenes.
 - **Responsive layout and Chaos Mode** provide alternate behavior and layouts to explore.
 
@@ -73,7 +73,7 @@ npm run preview
 
 - **React** and **React DOM** — interface and component state
 - **Vite** — development server and production build
-- **CSS** — visual system, responsive layout, animations, and CSS-drawn Pip illustration
+- **CSS and inline SVG** — visual system, responsive layout, animations, and Pip illustration
 - **Web Audio API** — synthesized melody and interface sounds
 - **`localStorage`** — browser-local Dream Shelf, Dreambook, and related local preferences/counters
 - **Google Fonts** — Nunito and DM Mono
