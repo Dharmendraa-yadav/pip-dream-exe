@@ -1,0 +1,12 @@
+When applying the overlay to an existing copy of the older ZIP, remove these obsolete duplicate files after copying the new files:
+
+- src/config/dreams.config.json
+- src/config/dreams.schema.json
+- src/audio/LullabyLabEngine.js
+
+The canonical replacements are:
+- src/dreams.config.json
+- src/dreams.schema.json
+- src/utils/LullabyLabEngine.js
+
+These deletions are already reflected in the complete integrated project ZIP.

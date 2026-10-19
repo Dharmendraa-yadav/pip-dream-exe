@@ -5,7 +5,7 @@ This document records the assets, libraries, browser APIs, and project origins i
 ## Character and event material
 
 - **Pip:** the character associated with the haX.baby *Baby’s First Website* Pip track. Pip is not an original character created by this team. Follow the organizer’s official attribution and usage guidance in the final submission.
-- **Pip illustration in the interface:** the active profile uses an inline SVG illustration stored in `src/components/SkullBabyAvatar.jsx`, styled with CSS from the project. This describes the implementation technique; it does not transfer ownership of the underlying character.
+- **Pip illustration in the interface:** drawn with CSS in the project source. This describes the implementation technique; it does not transfer ownership of the underlying character.
 
 ## Fonts
 
@@ -42,7 +42,7 @@ Feature-level ownership is not assigned in this file because individual responsi
 
 ## Audio, imagery, and other assets
 
-The current implementation synthesizes its interface tones and lullaby with the Web Audio API, and the Pip figure is an inline SVG illustration styled with project CSS. Before publishing, review the final repository and deployed build for any additional third-party icons, images, textures, sounds, snippets, or downloaded assets. Add their source and license here if any are present.
+The current implementation synthesizes its interface tones and lullaby with the Web Audio API, and the Pip figure is CSS-drawn. Before publishing, review the final repository and deployed build for any additional third-party icons, images, textures, sounds, snippets, or downloaded assets. Add their source and license here if any are present.
 
 ## AI assistance disclosure
 

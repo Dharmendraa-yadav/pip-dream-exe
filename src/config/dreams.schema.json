@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PIP Dream Configuration",
+  "type": "object",
+  "required": [
+    "version",
+    "moods",
+    "templates",
+    "assets"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "moods": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "label",
+          "colors",
+          "frequencyHz",
+          "oscillator",
+          "keywords"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "colors": {
+            "type": "object",
+            "required": [
+              "accent",
+              "glow",
+              "background"
+            ],
+            "properties": {
+              "accent": {
+                "type": "string"
+              },
+              "glow": {
+                "type": "string"
+              },
+              "background": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "frequencyHz": {
+            "type": "number",
+            "minimum": 40,
+            "maximum": 2000
+          },
+          "oscillator": {
+            "enum": [
+              "sine",
+              "triangle",
+              "square",
+              "sawtooth"
+            ]
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "templates": {
+      "type": "object",
+      "required": [
+        "title",
+        "message",
+        "adjectives"
+      ],
+      "properties": {
+        "title": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "message": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "adjectives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "assets": {
+      "type": "object",
+      "required": [
+        "retro"
+      ],
+      "properties": {
+        "retro": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "maxSavedDreams": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "maxImportBytes": {
+          "type": "integer",
+          "minimum": 1024
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

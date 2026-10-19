@@ -16,7 +16,7 @@ PIP:// DREAM.EXE is a tiny retro dream operating system where visitors help Pip 
 
 The project is designed to feel like discovering a strange, gentle personal computer late at night. Pip is more than a homepage mascot: the workshop’s interactions follow the character’s role as a dream engineer. Visitors can experiment with light and sound, compose a dream from a few choices, deliver it, and save it for later.
 
-The visual identity uses a midnight-plum and purple palette with dusty-pink and moon-gold accents, system-like labels, an inline SVG skull-faced Pip illustration, and restrained interface sounds. The goal is to combine the curiosity of an early personal website with a coherent, usable experience.
+The visual identity uses a midnight-plum and purple palette with dusty-pink and moon-gold accents, system-like labels, a CSS-drawn Pip illustration, and restrained interface sounds. The goal is to combine the curiosity of an early personal website with a coherent, usable experience.
 
 ## Visitor journey
 
@@ -38,7 +38,7 @@ The visual identity uses a midnight-plum and purple palette with dusty-pink and 
 
 ## Implementation overview
 
-The interface uses React and Vite. CSS provides the visual system, responsive layout, and animations; an inline SVG provides Pip’s skull-faced character illustration. The browser’s Web Audio API synthesizes the lullaby and interface tones. `localStorage` persists Dream Shelf entries, Dreambook notes, and local activity/preferences. The origin story uses `IntersectionObserver` where available, with a fallback for revealing its scenes.
+The interface uses React and Vite. CSS provides the visual system, responsive layout, animations, and CSS-drawn Pip illustration. The browser’s Web Audio API synthesizes the lullaby and interface tones. `localStorage` persists Dream Shelf entries, Dreambook notes, and local activity/preferences. The origin story uses `IntersectionObserver` where available, with a fallback for revealing its scenes.
 
 ## Accessibility and responsive considerations
 
@@ -74,6 +74,6 @@ The team collaborated on the existing `pip-dream-exe` React/Vite codebase and th
 - [ ] Verify the MUTE SYSTEM control and all contextual sound controls stay synchronized.
 - [ ] Verify odometer increments, duplicate-save behavior, and persistence after refresh.
 - [ ] Test the day/night theme, hidden interaction, origin story, Dreambook, and Chaos Mode.
-- [ ] Test mobile layout, keyboard interaction, reduced-motion behavior, and the sparkle trail on a real pointer device.
+- [ ] Test mobile layout, keyboard interaction, and reduced-motion behavior.
 - [ ] Confirm Pip attribution, asset credits, team names, and AI disclosure against the event’s requirements.
 - [ ] Submit the actual deployed URL and this write-up through the official submission process.

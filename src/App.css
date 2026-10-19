@@ -216,6 +216,81 @@ button {
   margin: 0 auto 20px;
 }
 
+.face {
+  position: absolute;
+  left: 25px;
+  top: 55px;
+  width: 160px;
+  height: 145px;
+  border-radius: 50% 50% 46% 46%;
+  background: #f1d7ca;
+  border: 3px solid #e7bfb1;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+.eye {
+  position: absolute;
+  top: 47px;
+  width: 38px;
+  height: 45px;
+  border-radius: 50%;
+  background: #33233c;
+}
+
+.left-eye {
+  left: 32px;
+}
+
+.right-eye {
+  right: 32px;
+}
+
+.eye span {
+  position: absolute;
+  top: 18px;
+  left: 15px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f5d98d;
+  box-shadow: 0 0 9px #f5d98d;
+}
+
+.smile {
+  position: absolute;
+  left: 67px;
+  bottom: 27px;
+  font-size: 28px;
+  color: #7c5362;
+  transform: rotate(180deg);
+}
+
+.nightcap {
+  position: absolute;
+  z-index: 3;
+  left: 65px;
+  top: 4px;
+  width: 90px;
+  height: 75px;
+  padding-top: 15px;
+  border-radius: 60% 40% 10% 10%;
+  background: #b86f91;
+  border: 3px solid #925574;
+  transform: rotate(-8deg);
+  color: #f5d98d;
+  font-size: 13px;
+  letter-spacing: 8px;
+}
+
+.bow {
+  position: absolute;
+  z-index: 4;
+  right: 20px;
+  top: 50px;
+  font-size: 28px;
+  transform: rotate(12deg);
+}
+
 .pip-intro {
   position: relative;
   z-index: 2;
@@ -744,7 +819,7 @@ button {
   border-radius: 48%;
 }
 
-.pip-secret-trigger.secret-found .pip-skull-avatar {
+.pip-secret-trigger.secret-found .nightcap {
   filter: drop-shadow(0 0 12px rgba(245, 217, 141, 0.9));
   animation: secret-cap-wiggle 500ms ease-in-out 2;
 }
@@ -1933,6 +2008,7 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .eye span { transition: none; }
   .visitor-odometer strong { animation: none; }
   .chaos-mode .project-card:nth-child(1),
   .chaos-mode .project-card:nth-child(2),
@@ -1964,10 +2040,14 @@ button {
 }
 
 /* Pip's face changes gently as the visitor chooses a mood or delivers a dream. */
-.pip-expression-brave .pip-skull-avatar { transform: rotate(-1.5deg); }
-.pip-expression-curious .pip-skull-avatar { transform: rotate(1.8deg); }
-.pip-expression-sleepy .pip-skull-avatar { filter: saturate(0.92); }
-.pip-expression-delighted .pip-skull-avatar { animation: pip-delighted 520ms ease-in-out 2; }
+.pip-expression-brave .face { transform: rotate(-1.5deg); }
+.pip-expression-brave .eye { height: 40px; top: 48px; }
+.pip-expression-brave .smile { transform: rotate(180deg) scale(1.12); }
+.pip-expression-curious .face { transform: rotate(1.8deg); }
+.pip-expression-curious .eye { top: 43px; height: 48px; }
+.pip-expression-sleepy .eye { transform: scaleY(0.82); transform-origin: center; }
+.pip-expression-delighted .face { animation: pip-delighted 520ms ease-in-out 2; }
+.pip-expression-delighted .nightcap { filter: drop-shadow(0 0 13px rgba(245, 217, 141, 0.7)); }
 .pip-reaction {
   width: fit-content;
   max-width: min(520px, 100%);
@@ -2158,56 +2238,33 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .pip-expression-delighted .face { animation: none; }
   .courier-rocket.is-preparing { animation: none; }
   .dream-passport { animation: none; }
 }
 
 /* Printing opens a dedicated, self-contained Dream Passport document. */
+.pip .face,
+.pip .eye,
+.pip .smile { transition: transform 220ms ease, top 220ms ease, height 220ms ease; }
 .day-mode .courier-message.delivered { color: #72500c; }
 
-
-/* Canonical Pip treatment: a skull-faced baby in the workshop palette. */
-.pip {
-  width: 220px;
-  height: 240px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  overflow: visible;
+/* Active mood tokens are supplied by src/dreams.config.json via App state. */
+.desktop .choice-card.is-chosen,
+.desktop .ingredient-choice.is-chosen,
+.desktop .destination-picks button.is-chosen {
+  border-color: var(--active-mood-accent, #f5d98d);
+  background-color: var(--active-mood-primary, #17111f);
+  box-shadow: inset 0 0 0 1px var(--active-mood-ambient, rgba(245, 217, 141, 0.08)),
+    0 0 22px var(--active-mood-ambient, rgba(245, 217, 141, 0.035));
 }
-.pip-skull-avatar {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  filter: drop-shadow(0 8px 14px rgba(8, 4, 15, 0.2));
+.desktop .choice-card.is-chosen .choice-icon,
+.desktop .recipe-card-art b {
+  color: var(--active-mood-accent, #f5d98d);
 }
-.pip-skull-avatar .pip-eye {
-  transform: translate(var(--eye-x, 0px), var(--eye-y, 0px));
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: transform 100ms ease;
+.desktop .dream-recipe-card {
+  border-color: var(--active-mood-accent, rgba(245, 217, 141, 0.4));
 }
-.pip-expression-delighted .pip-skull-avatar {
-  animation: pip-delighted 520ms ease-in-out 2;
-}
-.pip-expression-delighted .pip-skull-avatar [fill^="url(#pip-bonnet-gradient)"] {
-  filter: drop-shadow(0 0 7px rgba(245, 217, 141, 0.5));
-}
-@media (prefers-reduced-motion: reduce) {
-  .pip-expression-delighted .pip-skull-avatar { animation: none; }
-  .pip-skull-avatar .pip-eye { transition: none; }
-  .pip-secret-trigger.secret-found .pip-skull-avatar { animation: none; }
-}
-
-/* Bounded particle trail is pointer-transparent and respects reduced motion. */
-.dream-sparkle-particle {
-  color: #fff7ef;
-  font-size: 17px;
-  line-height: 1;
-  text-shadow: 0 0 9px rgba(245, 217, 141, 0.75), 0 0 18px rgba(232, 183, 202, 0.35);
-  user-select: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .dream-sparkle-trail-layer { display: none !important; }
+.desktop .recipe-card-art {
+  background: radial-gradient(ellipse at center, var(--active-mood-ambient, rgba(245, 217, 141, 0.14)), transparent 64%);
 }
