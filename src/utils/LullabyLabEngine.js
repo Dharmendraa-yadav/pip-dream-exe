@@ -94,6 +94,86 @@ export function createLullabyLabEngine({
   }
 
   /**
+   * Schedule a tiny two-tone sparkle chime through the shared master output.
+   * The base tone is constrained to 600-1200 Hz and the quieter overtone to
+   * at most 1800 Hz. No AudioContext or destination is created by this engine.
+   */
+  async function playSparkleChime({
+    frequency = 600 + Math.random() * 600,
+    soundEnabled = true,
+    durationMs = 105,
+    volume = 0.022,
+  } = {}) {
+    if (disposed || !locallyEnabled || soundEnabled === false || !safelyReadEnabled(isSoundEnabled)) {
+      return false;
+    }
+
+    const graph = resolveGraph();
+    if (!graph) return false;
+    const { context, output } = graph;
+
+    try {
+      if (context.state === "suspended") await context.resume();
+    } catch {
+      return false;
+    }
+
+    // Recheck after resume; the user may have muted audio while it was pending.
+    if (disposed || !locallyEnabled || soundEnabled === false || !safelyReadEnabled(isSoundEnabled)) {
+      return false;
+    }
+
+    const baseFrequency = clamp(frequency, 600, 1200);
+    const safeDurationMs = clamp(durationMs, 55, 190);
+    const baseVolume = clamp(volume, 0.001, 0.035);
+    const startAt = context.currentTime + 0.004;
+    const tones = [
+      { frequency: baseFrequency, type: "sine", gain: baseVolume },
+      { frequency: Math.min(1800, baseFrequency * 1.5), type: "triangle", gain: baseVolume * 0.32 },
+    ];
+
+    try {
+      for (const tone of tones) {
+        while (activeVoices.size >= voiceLimit) {
+          const oldestVoice = activeVoices.values().next().value;
+          if (!oldestVoice) break;
+          stopVoice(oldestVoice);
+        }
+
+        const oscillator = context.createOscillator();
+        const envelope = context.createGain();
+        const toneStart = startAt;
+        const toneEnd = toneStart + safeDurationMs / 1000;
+        oscillator.type = tone.type;
+        oscillator.frequency.setValueAtTime(tone.frequency, toneStart);
+        envelope.gain.setValueAtTime(0.0001, toneStart);
+        envelope.gain.exponentialRampToValueAtTime(tone.gain, toneStart + 0.009);
+        envelope.gain.exponentialRampToValueAtTime(0.0001, toneEnd);
+        oscillator.connect(envelope);
+        envelope.connect(output);
+
+        const voice = { oscillator, gain: envelope };
+        activeVoices.add(voice);
+        oscillator.addEventListener("ended", () => {
+          activeVoices.delete(voice);
+          try {
+            oscillator.disconnect();
+            envelope.disconnect();
+          } catch {
+            // Mute or teardown may already have disconnected these nodes.
+          }
+        }, { once: true });
+        oscillator.start(toneStart);
+        oscillator.stop(toneEnd + 0.015);
+      }
+      return true;
+    } catch {
+      stopAll();
+      return false;
+    }
+  }
+
+  /**
    * Play a short mood-based arpeggio. Call from a user gesture when possible,
    * since browsers may require interaction before resuming AudioContext.
    *
@@ -224,6 +304,7 @@ export function createLullabyLabEngine({
 
   return Object.freeze({
     playArpeggio,
+    playSparkleChime,
     setEnabled,
     stopAll,
     dispose,

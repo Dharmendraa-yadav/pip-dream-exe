@@ -6,6 +6,7 @@ import { createLullabyLabEngine } from "./utils/LullabyLabEngine.js";
 import dreamConfig from "./dreams.config.json";
 import { getDreamAudioGraph, readDreamAudioEnabled, setDreamAudioEnabled } from "./audio/dreamAudioBus.js";
 import usePersistentDreamCounter from "./hooks/usePersistentDreamCounter.js";
+import useSparkleTrail from "./hooks/useSparkleTrail.js";
 import "./App.css";
 
 // Application copy and mood behavior live in dreams.config.json so components
@@ -173,8 +174,15 @@ function App() {
   const lullabyTimerRef = useRef(null);
   const soundEnabledRef = useRef(soundEnabled);
   const lullabyEngineRef = useRef(null);
-  // toggleSound updates this ref synchronously before scheduling React state.
   const activeMoodConfig = dreamConfig.moods[ritualMood] ?? dreamConfig.moods.rest;
+  const { canvasRef: sparkleTrailCanvasRef } = useSparkleTrail({
+    enabled: started && !focusMode,
+    soundEnabled,
+    onChime: ({ frequency }) => lullabyEngineRef.current?.playSparkleChime({
+      frequency,
+      soundEnabled: soundEnabledRef.current,
+    }),
+  });
 
   useEffect(() => {
     setDreamAudioEnabled(soundEnabled);
@@ -486,6 +494,20 @@ function App() {
         "--active-mood-ambient": activeMoodConfig.ambientColor,
       }}
     >
+      <canvas
+        ref={sparkleTrailCanvasRef}
+        className="dream-sparkle-canvas"
+        aria-hidden="true"
+        style={{
+          position: "fixed",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          pointerEvents: "none",
+          zIndex: 79,
+          display: started && !focusMode ? "block" : "none",
+        }}
+      />
       <a className="skip-link" href="#workshop">Skip to the workshop</a>
       <div ref={cursorSparkleRef} className="cursor-sparkle" aria-hidden="true">✦</div>
       <header className="desktop-header">

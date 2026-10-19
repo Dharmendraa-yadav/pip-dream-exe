@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/validate-dream-os.mjs --checks-only && vite build && node scripts/validate-dream-os.mjs --dist-only",
     "lint": "eslint .",
     "preview": "vite preview",
     "validate:architecture": "node scripts/validate-dream-os.mjs --checks-only",
