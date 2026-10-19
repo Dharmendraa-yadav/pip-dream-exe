@@ -2248,3 +2248,23 @@ button {
 .pip .eye,
 .pip .smile { transition: transform 220ms ease, top 220ms ease, height 220ms ease; }
 .day-mode .courier-message.delivered { color: #72500c; }
+
+/* Active mood tokens are supplied by src/dreams.config.json via App state. */
+.desktop .choice-card.is-chosen,
+.desktop .ingredient-choice.is-chosen,
+.desktop .destination-picks button.is-chosen {
+  border-color: var(--active-mood-accent, #f5d98d);
+  background-color: var(--active-mood-primary, #17111f);
+  box-shadow: inset 0 0 0 1px var(--active-mood-ambient, rgba(245, 217, 141, 0.08)),
+    0 0 22px var(--active-mood-ambient, rgba(245, 217, 141, 0.035));
+}
+.desktop .choice-card.is-chosen .choice-icon,
+.desktop .recipe-card-art b {
+  color: var(--active-mood-accent, #f5d98d);
+}
+.desktop .dream-recipe-card {
+  border-color: var(--active-mood-accent, rgba(245, 217, 141, 0.4));
+}
+.desktop .recipe-card-art {
+  background: radial-gradient(ellipse at center, var(--active-mood-ambient, rgba(245, 217, 141, 0.14)), transparent 64%);
+}

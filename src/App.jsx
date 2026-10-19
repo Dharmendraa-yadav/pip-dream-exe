@@ -1,28 +1,34 @@
 import { useEffect, useRef, useState } from "react";
+import BonusAudioController from "./components/BonusAudioController.jsx";
+import ChaosOverlay from "./components/ChaosOverlay.jsx";
+import DreamGuestbook from "./components/DreamGuestbook.jsx";
+import { createLullabyLabEngine } from "./utils/LullabyLabEngine.js";
+import dreamConfig from "./dreams.config.json";
+import { getDreamAudioGraph, readDreamAudioEnabled, setDreamAudioEnabled } from "./audio/dreamAudioBus.js";
+import usePersistentDreamCounter from "./hooks/usePersistentDreamCounter.js";
 import "./App.css";
 
-const dreamMoods = [
-  { id: "rest", label: "I need rest", icon: "☾", word: "gentle", line: "A quiet place where nothing needs to be solved." },
-  { id: "courage", label: "I need courage", icon: "✦", word: "brave", line: "A small light that reminds you that you can begin." },
-  { id: "wonder", label: "I need wonder", icon: "✧", word: "curious", line: "A hidden door, a new sky, and one impossible little thing." },
-];
+// Application copy and mood behavior live in dreams.config.json so components
+// render the configured data rather than maintaining parallel content arrays.
+const dreamMoods = Object.entries(dreamConfig.moods).map(([id, mood]) => ({
+  id,
+  ...mood,
+}));
+const dreamIngredients = dreamConfig.ingredients;
+const dreamDestinations = dreamConfig.destinations;
+const dailyDreamPrompts = dreamConfig.copy.dailyDreamPrompts;
 
-const dreamIngredients = [
-  { id: "moon-dust", label: "Moon dust", icon: "🌙", detail: "a silver path through the quiet" },
-  { id: "cloud-pillow", label: "Cloud pillow", icon: "☁️", detail: "a soft landing after a long day" },
-  { id: "warm-rain", label: "Warm rain", icon: "☔", detail: "the sound of the world slowing down" },
-  { id: "star-seed", label: "Star seed", icon: "🌟", detail: "one tiny possibility ready to grow" },
-];
+function fillDreamTemplate(template, values) {
+  return String(template ?? "").replace(/\{([a-zA-Z][a-zA-Z0-9_]*)\}/g, (match, token) => (
+    Object.hasOwn(values, token) ? String(values[token]) : match
+  ));
+}
 
-const dailyDreamPrompts = [
-  "What would you leave glowing for someone who feels lost?",
-  "If your worries could float away, what shape would they take?",
-  "Which tiny thing made today worth keeping?",
-  "What would you tell a star that is afraid of the dark?",
-  "Imagine a door that only opens when you are kind to yourself.",
-  "What would your perfect little cloud carry for you?",
-  "If tomorrow arrived as a gift, what would you hope was inside?",
-];
+function selectDreamTemplate(templates, seed) {
+  if (!Array.isArray(templates) || templates.length === 0) return "A little dream";
+  const index = ((seed % templates.length) + templates.length) % templates.length;
+  return templates[index];
+}
 
 function escapePrintText(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => ({
@@ -120,7 +126,8 @@ function getLocalDayKey(date = new Date()) {
 function App() {
   const [started, setStarted] = useState(false);
   const [lullabyPlaying, setLullabyPlaying] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabledState] = useState(readDreamAudioEnabled);
+  const { count: dreamActivityCount, increment: incrementDreamActivity } = usePersistentDreamCounter();
   const [activeProject, setActiveProject] = useState(null);
   const [focusMode, setFocusMode] = useState(false);
   const [pipExpression, setPipExpression] = useState("sleepy");
@@ -139,29 +146,11 @@ function App() {
       return 0;
     }
   });
-  const [dreamActivityCount, setDreamActivityCount] = useState(() => {
-    try {
-      const storedCount = window.localStorage.getItem("pip-dream-simulated-count");
-      if (storedCount !== null) {
-        const count = Number(storedCount);
-        return Number.isSafeInteger(count) && count >= 0 ? Math.min(count, 999999) : 0;
-      }
 
-      // Seed the new metric with any already-saved dreams, without inventing past compile events.
-      const existingShelf = JSON.parse(window.localStorage.getItem("pip-dream-shelf") || "[]");
-      return Array.isArray(existingShelf)
-        ? Math.min(existingShelf.filter((item) => item && typeof item.id === "string").length, 999999)
-        : 0;
-    } catch {
-      return 0;
-    }
-  });
   const [returningVisitor, setReturningVisitor] = useState(() => visitCount > 0);
   const [dreamSaveMessage, setDreamSaveMessage] = useState("");
   const [pipTapCount, setPipTapCount] = useState(0);
   const [secretFound, setSecretFound] = useState(false);
-  const [guestbookName, setGuestbookName] = useState("");
-  const [guestbookMessage, setGuestbookMessage] = useState("");
   const [ritualMood, setRitualMood] = useState("rest");
   const [ritualIngredient, setRitualIngredient] = useState("moon-dust");
   const [ritualDestination, setRitualDestination] = useState("Moon Garden");
@@ -177,25 +166,35 @@ function App() {
   const todayKey = getLocalDayKey();
   const dayNumber = Math.floor(new Date(`${todayKey}T12:00:00`).getTime() / 86400000);
   const dailyDreamPrompt = dailyDreamPrompts[((dayNumber % dailyDreamPrompts.length) + dailyDreamPrompts.length) % dailyDreamPrompts.length];
-  const [guestbookEntries, setGuestbookEntries] = useState(() => {
-    try {
-      const savedEntries = window.localStorage.getItem("pip-dream-guestbook");
-      const parsedEntries = savedEntries ? JSON.parse(savedEntries) : [];
-      return Array.isArray(parsedEntries)
-        ? parsedEntries
-            .filter((entry) => entry && typeof entry.name === "string" && typeof entry.message === "string")
-            .slice(0, 6)
-        : [];
-    } catch {
-      return [];
-    }
-  });
 
-  const audioContextRef = useRef(null);
+
   const cursorSparkleRef = useRef(null);
-  const masterGainRef = useRef(null);
   const courierTimerRef = useRef(null);
   const lullabyTimerRef = useRef(null);
+  const soundEnabledRef = useRef(soundEnabled);
+  const lullabyEngineRef = useRef(null);
+  // toggleSound updates this ref synchronously before scheduling React state.
+  const activeMoodConfig = dreamConfig.moods[ritualMood] ?? dreamConfig.moods.rest;
+
+  useEffect(() => {
+    setDreamAudioEnabled(soundEnabled);
+    lullabyEngineRef.current?.setEnabled(soundEnabled);
+  }, [soundEnabled]);
+
+  useEffect(() => {
+    const engine = createLullabyLabEngine({
+      // Route every generated note through the app's existing single master gain.
+      getAudioGraph: getDreamAudioGraph,
+      isSoundEnabled: () => soundEnabledRef.current,
+    });
+    engine.setEnabled(soundEnabledRef.current);
+    lullabyEngineRef.current = engine;
+
+    return () => {
+      void engine.dispose();
+      if (lullabyEngineRef.current === engine) lullabyEngineRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -203,14 +202,6 @@ function App() {
       window.clearTimeout(lullabyTimerRef.current);
     };
   }, []);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem("pip-dream-simulated-count", String(dreamActivityCount));
-    } catch {
-      // The counter still updates for this visit when browser storage is unavailable.
-    }
-  }, [dreamActivityCount]);
 
   useEffect(() => {
     if (!started) return undefined;
@@ -273,82 +264,28 @@ function App() {
     return () => observer.disconnect();
   }, [started]);
 
-  useEffect(() => {
-    if (!started || !soundEnabled) return undefined;
-
-    const desktop = document.querySelector(".desktop");
-    if (!desktop) return undefined;
-
-    const handleUiClick = (event) => {
-      const target = event.target instanceof Element
-        ? event.target.closest("button, a, select")
-        : null;
-      if (!target || target.matches(":disabled") || target.getAttribute("aria-disabled") === "true") return;
-
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) return;
-
-      if (!audioContextRef.current) {
-        audioContextRef.current = new AudioContextClass();
-        masterGainRef.current = audioContextRef.current.createGain();
-        masterGainRef.current.gain.value = 1;
-        masterGainRef.current.connect(audioContextRef.current.destination);
-      }
-
-      const context = audioContextRef.current;
-      if (context.state === "suspended") void context.resume();
-
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      const now = context.currentTime;
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(780, now);
-      gain.gain.setValueAtTime(0.018, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
-      oscillator.connect(gain);
-      gain.connect(masterGainRef.current);
-      oscillator.start(now);
-      oscillator.stop(now + 0.06);
-    };
-
-    desktop.addEventListener("click", handleUiClick, true);
-    return () => desktop.removeEventListener("click", handleUiClick, true);
-  }, [started, soundEnabled]);
-
-  const handleGuestbookSubmit = (event) => {
-    event.preventDefault();
-    const message = guestbookMessage.trim().slice(0, 160);
-    if (!message) return;
-
-    const entry = {
-      id: `${Date.now()}-${Math.random().toString(16).slice(2, 7)}`,
-      name: guestbookName.trim().slice(0, 26) || "Sleepy visitor",
-      message,
-      stamp: new Date().toLocaleDateString(undefined, { month: "short", day: "numeric" }),
-    };
-    const nextEntries = [entry, ...guestbookEntries].slice(0, 6);
-    setGuestbookEntries(nextEntries);
-    try {
-      window.localStorage.setItem("pip-dream-guestbook", JSON.stringify(nextEntries));
-    } catch {
-      // The guestbook still works for this visit when storage is unavailable.
-    }
-    setGuestbookName("");
-    setGuestbookMessage("");
-  };
-
   const createDreamRecipe = () => {
     setDreamSaveMessage("");
     const mood = dreamMoods.find((item) => item.id === ritualMood) || dreamMoods[0];
-    setPipExpression(mood.id === "rest" ? "sleepy" : mood.id === "courage" ? "brave" : "curious");
+    setPipExpression(mood.expression);
     const ingredient = dreamIngredients.find((item) => item.id === ritualIngredient) || dreamIngredients[0];
-    const titles = {
-      rest: ["The Quiet Between Stars", "A Blanket for the Moon", "The Slow-Down Garden"],
-      courage: ["A Pocketful of Brave", "The Little Lantern Route", "The First Step Comet"],
-      wonder: ["The Door Behind the Cloud", "A Map of Almost-Magic", "The Curious Star Parade"],
+    const templateSeed = ingredient.id.length + dayNumber;
+    const values = {
+      adjective: mood.word,
+      destination: ritualDestination,
+      ingredient: ingredient.label.toLowerCase(),
+      ingredientDetail: ingredient.detail,
+      mood: mood.label.toLowerCase(),
+      moodLine: mood.line,
     };
-    const titleOptions = titles[mood.id] || titles.rest;
-    const titleIndex = (ingredient.id.length + dayNumber) % titleOptions.length;
+    const title = fillDreamTemplate(
+      selectDreamTemplate(mood.recipeTemplates?.titles, templateSeed),
+      values,
+    );
+    const message = fillDreamTemplate(
+      selectDreamTemplate(mood.recipeTemplates?.messages, templateSeed + 1),
+      values,
+    );
     const recipe = {
       id: `${Date.now()}-${Math.random().toString(16).slice(2, 7)}`,
       dayKey: todayKey,
@@ -359,12 +296,22 @@ function App() {
       ingredient: ingredient.label,
       ingredientIcon: ingredient.icon,
       destination: ritualDestination,
-      title: titleOptions[titleIndex],
-      message: `${mood.line} Add ${ingredient.detail}, then follow Pip's tiny lanterns to ${ritualDestination}.`,
+      title,
+      message,
     };
     setGeneratedDream(recipe);
     // A completed compile is an activity even before the visitor chooses to save it.
-    setDreamActivityCount((count) => Math.min(count + 1, 999999));
+    incrementDreamActivity();
+    // The generated cue uses the same master bus as every other sound in the app.
+    void lullabyEngineRef.current?.playArpeggio({
+      moodConfig: mood,
+      text: `${recipe.title}. ${recipe.message}`,
+      keywords: mood.keywords,
+      soundEnabled: soundEnabledRef.current,
+      componentLoadState: "ready",
+      noteCount: 4,
+      durationMs: 260,
+    });
   };
 
   const saveDreamRecipe = () => {
@@ -383,7 +330,7 @@ function App() {
 
     if (isNewShelfEntry) {
       // Re-saving or reopening the same recipe does not count as another shelf addition.
-      setDreamActivityCount((count) => Math.min(count + 1, 999999));
+      incrementDreamActivity();
       setDreamSaveMessage(persisted
         ? "Saved to your Dream Shelf on this device."
         : "Added for this visit, but browser storage is unavailable.");
@@ -430,60 +377,41 @@ function App() {
   };
 
   const playLullaby = async () => {
-    if (!soundEnabled || lullabyPlaying) return;
+    if (!soundEnabledRef.current || lullabyPlaying) return;
 
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return;
-
-    if (!audioContextRef.current) {
-      audioContextRef.current = new AudioContextClass();
-      masterGainRef.current = audioContextRef.current.createGain();
-      masterGainRef.current.gain.value = soundEnabled ? 1 : 0;
-      masterGainRef.current.connect(audioContextRef.current.destination);
-    }
-
-    const audioContext = audioContextRef.current;
-    if (audioContext.state === "suspended") {
-      await audioContext.resume();
-    }
-
-    const notes = [261.63, 329.63, 392.0, 329.63, 293.66, 349.23];
     setLullabyPlaying(true);
-
-    notes.forEach((frequency, index) => {
-      const oscillator = audioContext.createOscillator();
-      const noteGain = audioContext.createGain();
-      oscillator.type = "sine";
-      oscillator.frequency.value = frequency;
-
-      const startTime = audioContext.currentTime + index * 0.45;
-      const endTime = startTime + 0.4;
-      noteGain.gain.setValueAtTime(0, startTime);
-      noteGain.gain.linearRampToValueAtTime(0.12, startTime + 0.05);
-      noteGain.gain.linearRampToValueAtTime(0, endTime);
-
-      oscillator.connect(noteGain);
-      noteGain.connect(masterGainRef.current);
-      oscillator.start(startTime);
-      oscillator.stop(endTime);
+    const selectedMood = dreamConfig.moods[ritualMood] ?? dreamConfig.moods.rest;
+    const didPlay = await lullabyEngineRef.current?.playArpeggio({
+      moodConfig: selectedMood,
+      text: `${selectedMood.label} ${selectedMood.line}`,
+      keywords: selectedMood.keywords,
+      soundEnabled: soundEnabledRef.current,
+      componentLoadState: "ready",
+      volume: 0.1,
+      noteCount: 6,
+      noteSpacingMs: 220,
+      durationMs: 300,
+      delayMs: 12,
     });
+
+    if (!didPlay) {
+      setLullabyPlaying(false);
+      return;
+    }
 
     window.clearTimeout(lullabyTimerRef.current);
     lullabyTimerRef.current = window.setTimeout(() => {
       setLullabyPlaying(false);
-    }, notes.length * 450);
+    }, 6 * 220 + 400);
   };
 
-  const toggleSound = () => {
-    const nextEnabled = !soundEnabled;
-    if (masterGainRef.current && audioContextRef.current) {
-      masterGainRef.current.gain.setTargetAtTime(
-        nextEnabled ? 1 : 0,
-        audioContextRef.current.currentTime,
-        0.025,
-      );
-    }
-    setSoundEnabled(nextEnabled);
+  const toggleSound = (nextEnabled = !soundEnabled) => {
+    // Stop scheduled voices synchronously before React's next render.
+    soundEnabledRef.current = nextEnabled;
+    setDreamAudioEnabled(nextEnabled);
+    lullabyEngineRef.current?.setEnabled(nextEnabled);
+    if (!nextEnabled) setLullabyPlaying(false);
+    setSoundEnabledState(nextEnabled);
   };
 
   const openProject = (project) => {
@@ -549,7 +477,15 @@ function App() {
   }
 
   return (
-    <main className={`desktop ${dayMode ? "day-mode" : ""} ${chaosMode ? "chaos-mode" : ""} ${focusMode ? "focus-mode" : ""}`}>
+    <main
+      className={`desktop ${dayMode ? "day-mode" : ""} ${chaosMode ? "chaos-mode" : ""} ${focusMode ? "focus-mode" : ""}`}
+      data-active-mood={ritualMood}
+      style={{
+        "--active-mood-primary": activeMoodConfig.primaryColor,
+        "--active-mood-accent": activeMoodConfig.accentColor,
+        "--active-mood-ambient": activeMoodConfig.ambientColor,
+      }}
+    >
       <a className="skip-link" href="#workshop">Skip to the workshop</a>
       <div ref={cursorSparkleRef} className="cursor-sparkle" aria-hidden="true">✦</div>
       <header className="desktop-header">
@@ -588,15 +524,14 @@ function App() {
           >
             {focusMode ? "◎ Exit focus" : "◎ Ritual focus"}
           </button>
-          <button
+          <ChaosOverlay
+            enabled={chaosMode}
+            onToggle={setChaosMode}
+            label="1999 Chaos Mode"
+            disabledLabel="🌀 Chaos mode"
+            enabledLabel="✦ Calm the chaos"
             className={`theme-toggle chaos-toggle ${chaosMode ? "is-active" : ""}`}
-            type="button"
-            onClick={() => setChaosMode((mode) => !mode)}
-            aria-pressed={chaosMode}
-            title="Switch on a playful, responsive layout remix."
-          >
-            {chaosMode ? "✦ Calm the chaos" : "🌀 Chaos mode"}
-          </button>
+          />
           <div className="status">
             <span className="status-dot" />
             DREAM MACHINE ONLINE
@@ -692,8 +627,10 @@ function App() {
 
           <button
             className={`project-card ${activeProject === "nightlight" ? "is-selected" : ""}`}
-            onClick={() => openProject("nightlight")}
+            onClick={() => (activeProject === "nightlight" ? closeProject() : openProject("nightlight"))}
+            aria-label={activeProject === "nightlight" ? "Close Nightlight Studio panel" : "Open Nightlight Studio panel"}
             aria-expanded={activeProject === "nightlight"}
+            aria-controls={activeProject === "nightlight" ? "nightlight-panel" : undefined}
           >
             <span className="project-topline"><span className="project-index">MODULE 02</span><span className="project-status">LIGHT</span></span>
             <span className="project-icon icon-light" aria-hidden="true">✹</span>
@@ -704,8 +641,10 @@ function App() {
 
           <button
             className={`project-card ${activeProject === "courier" ? "is-selected" : ""}`}
-            onClick={() => openProject("courier")}
+            onClick={() => (activeProject === "courier" ? closeProject() : openProject("courier"))}
+            aria-label={activeProject === "courier" ? "Close Dream Courier panel" : "Open Dream Courier panel"}
             aria-expanded={activeProject === "courier"}
+            aria-controls={activeProject === "courier" ? "courier-panel" : undefined}
           >
             <span className="project-topline"><span className="project-index">MODULE 03</span><span className="project-status">DELIVERY</span></span>
             <span className="project-icon icon-rocket" aria-hidden="true">🚀</span>
@@ -716,7 +655,7 @@ function App() {
         </div>
 
         {activeProject === "nightlight" && (
-          <section className="project-panel" aria-labelledby="nightlight-title">
+          <section id="nightlight-panel" className="project-panel" aria-labelledby="nightlight-title" aria-label="Nightlight Studio controls">
             <div className="panel-heading">
               <div>
                 <p className="panel-kicker">WORKSHOP MODULE 02</p>
@@ -768,7 +707,7 @@ function App() {
         )}
 
         {activeProject === "courier" && (
-          <section className="project-panel courier-panel" aria-labelledby="courier-title">
+          <section id="courier-panel" className="project-panel courier-panel" aria-labelledby="courier-title" aria-label="Dream Courier controls">
             <div className="panel-heading">
               <div>
                 <p className="panel-kicker">WORKSHOP MODULE 03</p>
@@ -850,10 +789,8 @@ function App() {
           </section>
         )}
 
-        <div className="sound-control">
-          <button onClick={toggleSound} aria-pressed={soundEnabled}>
-            {soundEnabled ? "🔊 Sound ON" : "🔇 Sound OFF"}
-          </button>
+        <div className="sound-control" aria-label="Dream audio preferences">
+          <BonusAudioController soundEnabled={soundEnabled} onToggle={toggleSound} />
         </div>
       </section>
 
@@ -874,8 +811,8 @@ function App() {
             <legend><span>01</span> How are you arriving tonight?</legend>
             <div className="choice-grid mood-choices">
               {dreamMoods.map((mood) => (
-                <button key={mood.id} type="button" className={`choice-card ${ritualMood === mood.id ? "is-chosen" : ""}`} onClick={() => { setRitualMood(mood.id); setPipExpression(mood.id === "rest" ? "sleepy" : mood.id === "courage" ? "brave" : "curious"); }} aria-pressed={ritualMood === mood.id}>
-                  <span className="choice-icon" aria-hidden="true">{mood.icon}</span><strong>{mood.label}</strong><small>{mood.id === "rest" ? "let the day soften" : mood.id === "courage" ? "take one small step" : "follow a little wonder"}</small>
+                <button key={mood.id} type="button" className={`choice-card ${ritualMood === mood.id ? "is-chosen" : ""}`} onClick={() => { setRitualMood(mood.id); setPipExpression(mood.expression); }} aria-pressed={ritualMood === mood.id}>
+                  <span className="choice-icon" aria-hidden="true">{mood.icon}</span><strong>{mood.label}</strong><small>{mood.subLabel}</small>
                 </button>
               ))}
             </div>
@@ -895,7 +832,7 @@ function App() {
           <fieldset className="ritual-step ritual-destination-step">
             <legend><span>03</span> Where should Pip send it?</legend>
             <div className="destination-picks">
-              {["Moon Garden", "Cloud Harbor", "Star Library"].map((place) => (
+              {dreamDestinations.map((place) => (
                 <button key={place} type="button" className={ritualDestination === place ? "is-chosen" : ""} onClick={() => setRitualDestination(place)} aria-pressed={ritualDestination === place}>{place}</button>
               ))}
             </div>
@@ -976,58 +913,10 @@ function App() {
             </div>
           </article>
         </div>
-        <section className="guestbook" aria-labelledby="guestbook-title">
-          <div className="guestbook-header">
-            <div>
-              <p className="panel-kicker">SIDE QUEST 01 · THE DREAMBOOK</p>
-              <h3 id="guestbook-title">Leave a tiny dream behind.</h3>
-              <p className="guestbook-copy">A small note for the next person passing through the night.</p>
-            </div>
-            <span className="guestbook-seal" aria-hidden="true">✎<small>PIN A<br />WISH</small></span>
-          </div>
-          <form className="guestbook-form" onSubmit={handleGuestbookSubmit}>
-            <label>
-              <span>Your sleepy name <em>optional</em></span>
-              <input
-                type="text"
-                value={guestbookName}
-                maxLength={26}
-                placeholder="A moon visitor"
-                onChange={(event) => setGuestbookName(event.target.value)}
-              />
-            </label>
-            <label>
-              <span>Your note <em>160 characters max</em></span>
-              <textarea
-                value={guestbookMessage}
-                maxLength={160}
-                rows={3}
-                required
-                placeholder="Leave a kind wish, a dream, or a tiny hello..."
-                onChange={(event) => setGuestbookMessage(event.target.value)}
-              />
-            </label>
-            <div className="guestbook-form-footer">
-              <span>{guestbookMessage.length}/160 · Saved on this device only</span>
-              <button className="action-button" type="submit" disabled={!guestbookMessage.trim()}>Pin to dreambook ✦</button>
-            </div>
-          </form>
-          {guestbookEntries.length ? (
-            <div className="guestbook-entries" aria-live="polite">
-              {guestbookEntries.map((entry) => (
-                <article className="guestbook-entry" key={entry.id}>
-                  <span className="entry-pin" aria-hidden="true">✦</span>
-                  <div><p>{entry.message}</p><footer><strong>{entry.name}</strong><time>{entry.stamp || "Saved dream"}</time></footer></div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <p className="guestbook-empty">No notes in the dreambook yet. Yours can be the first ✧</p>
-          )}
-        </section>
+        <DreamGuestbook dreamsSimulated={dreamActivityCount} />
 
         {secretFound && (
-          <aside className="secret-note" role="status" aria-live="polite">
+          <aside className="secret-note" role="status" aria-label="Pip secret message" aria-live="polite">
             <span className="secret-stamp" aria-hidden="true">✦</span>
             <div>
               <p className="panel-kicker">HIDDEN FILE FOUND · 05/05</p>

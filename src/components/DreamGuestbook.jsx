@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 const GUESTBOOK_STORAGE_KEY = "pip-dream-guestbook";
-const COUNTER_STORAGE_KEY = "pip-dream-simulated-dreams";
 const MAX_VISIBLE_ENTRIES = 24;
 const MAX_NAME_LENGTH = 32;
 const MAX_WISH_LENGTH = 240;
@@ -27,15 +26,6 @@ function safeReadEntries() {
   }
 }
 
-function safeReadCounter() {
-  try {
-    const value = Number(window.localStorage.getItem(COUNTER_STORAGE_KEY) || 0);
-    return Number.isSafeInteger(value) && value >= 0 ? value : 0;
-  } catch {
-    return 0;
-  }
-}
-
 function createEntryId() {
   try {
     if (typeof window.crypto?.randomUUID === "function") return window.crypto.randomUUID();
@@ -54,9 +44,9 @@ function makeDateStamp(date = new Date()) {
 }
 
 /** A local-first dream wall. Entries persist in the current browser, not on a shared server. */
-export default function DreamGuestbook() {
+export default function DreamGuestbook({ dreamsSimulated = 0 }) {
+  const safeCounter = Number.isSafeInteger(dreamsSimulated) && dreamsSimulated >= 0 ? dreamsSimulated : 0;
   const [entries, setEntries] = useState(safeReadEntries);
-  const [dreamsSimulated, setDreamsSimulated] = useState(safeReadCounter);
   const [name, setName] = useState("");
   const [wish, setWish] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
@@ -87,14 +77,13 @@ export default function DreamGuestbook() {
       createdAt: created.toISOString(),
     };
 
-    // Update the React state immediately; the newest dream appears at the top.
-    setEntries((currentEntries) => [entry, ...currentEntries].slice(0, MAX_VISIBLE_ENTRIES));
-    const nextCount = dreamsSimulated + 1;
-    setDreamsSimulated(nextCount);
+    // Persist inside the submit event so an immediate reload cannot lose this entry.
+    const nextEntries = [entry, ...entries].slice(0, MAX_VISIBLE_ENTRIES);
+    setEntries(nextEntries);
     try {
-      window.localStorage.setItem(COUNTER_STORAGE_KEY, String(nextCount));
+      window.localStorage.setItem(GUESTBOOK_STORAGE_KEY, JSON.stringify(nextEntries));
     } catch {
-      // Counter value remains correct for this session even if persistence is blocked.
+      // The guestbook remains usable for this visit when storage is unavailable.
     }
 
     setName("");
@@ -157,7 +146,7 @@ export default function DreamGuestbook() {
         <span>THE WISH WALL</span>
         <span>{entries.length} / {MAX_VISIBLE_ENTRIES} visible</span>
       </div>
-      <div className="dream-guestbook-wall" aria-label="Saved dream wishes">
+      <section className="dream-guestbook-wall" aria-label="Saved dream wishes">
         {entries.length > 0 ? (
           <ol className="dream-guestbook-list" aria-live="polite" aria-relevant="additions">
             {entries.map((entry) => (
@@ -176,14 +165,14 @@ export default function DreamGuestbook() {
         ) : (
           <p className="dream-guestbook-empty guestbook-empty">No wishes pinned yet. Yours can be the first ✧</p>
         )}
-      </div>
+      </section>
 
-      <footer className="dream-guestbook-odometer" aria-label={`Dreams simulated on this browser: ${dreamsSimulated}`}>
+      <footer className="dream-guestbook-odometer" aria-label={`Dream activity counter: ${safeCounter} events recorded in this browser`}>
         <div>
-          <span className="dream-guestbook-odometer-label">DREAMS SIMULATED</span>
+          <span className="dream-guestbook-odometer-label">DREAM ACTIVITY</span>
           <small>LOCAL DEVICE COUNTER · NOT A GLOBAL VISITOR COUNT</small>
         </div>
-        <strong aria-hidden="true">{formatOdometer(dreamsSimulated)}</strong>
+        <strong aria-hidden="true">{formatOdometer(safeCounter)}</strong>
       </footer>
     </section>
   );

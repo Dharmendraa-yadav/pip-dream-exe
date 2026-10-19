@@ -103,7 +103,7 @@ export default function ProjectManifest({
   };
 
   return (
-    <section className="min-w-0 rounded-3xl border border-white/10 bg-slate-900/80 p-4 shadow-2xl shadow-black/20 sm:p-5" aria-labelledby="project-manifest-title">
+    <section className="min-w-0 rounded-3xl border border-white/10 bg-slate-900/80 p-4 shadow-2xl shadow-black/20 sm:p-5" aria-labelledby="project-manifest-title" aria-label="Engineered workshops project manifest">
       <header className="flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-violet-300">Archive / 02</p>
@@ -124,6 +124,7 @@ export default function ProjectManifest({
               <button
                 id={buttonId}
                 type="button"
+                aria-label={`${isExpanded ? "Collapse" : "Expand"} details for ${project.name}`}
                 aria-expanded={isExpanded}
                 aria-controls={panelId}
                 onClick={() => toggleProject(project)}
@@ -143,7 +144,9 @@ export default function ProjectManifest({
                 id={panelId}
                 role="region"
                 aria-labelledby={buttonId}
+                aria-label={`${project.name} technical specifications and operational history`}
                 aria-hidden={!isExpanded}
+                inert={!isExpanded}
                 className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
               >
                 <div className="min-h-0 overflow-hidden">

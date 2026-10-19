@@ -25,6 +25,9 @@
 - **Dreambook** lets visitors leave a short note stored locally in their browser.
 - **Dream activity odometer** records local dream activity; it is not a global visitor counter.
 - **Day/night theme and shared sound control** support the visual and audio experience.
+- **Data-driven mood profiles** keep mood copy, theme colors, dream templates, destinations, and synth settings in `src/dreams.config.json`.
+- **1999 Chaos Overlay** adds scoped falling pixel stars, pointer trails, and retro text shadows only while enabled, then removes its effects during cleanup.
+- **Mood-aware Lullaby Lab engine** routes bounded arpeggios through the single shared audio bus, so the global mute remains authoritative.
 - **Origin story** reveals Pip’s story across three scenes.
 - **Responsive layout and Chaos Mode** provide alternate behavior and layouts to explore.
 
@@ -59,6 +62,8 @@ Open the local URL printed by Vite, usually `http://localhost:5173`.
 ### Run quality checks
 
 ```bash
+npm run validate:architecture
+npm run test:audio-engine
 npm run lint
 npm run build
 ```
@@ -74,7 +79,8 @@ npm run preview
 - **React** and **React DOM** — interface and component state
 - **Vite** — development server and production build
 - **CSS** — visual system, responsive layout, animations, and CSS-drawn Pip illustration
-- **Web Audio API** — synthesized melody and interface sounds
+- **Web Audio API** — synthesized melody and interface sounds routed through one shared master gain
+- **JSON configuration + JSON Schema** — data-driven mood profiles, template copy, assets, and local-only tracking metadata
 - **`localStorage`** — browser-local Dream Shelf, Dreambook, and related local preferences/counters
 - **Google Fonts** — Nunito and DM Mono
 
