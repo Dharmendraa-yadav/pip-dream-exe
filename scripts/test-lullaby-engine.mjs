@@ -74,6 +74,19 @@ assert.ok(
   "every envelope must route to the application's shared master output",
 );
 
+const firstChimeVoice = scheduledOscillators.length;
+assert.equal(
+  await engine.playSparkleChime({ frequency: 900 }),
+  true,
+  "a sparkle burst should schedule its harmonic chime",
+);
+assert.equal(scheduledOscillators.length - firstChimeVoice, 2, "a sparkle chime uses two bounded harmonic voices");
+assert.deepEqual(
+  scheduledOscillators.slice(firstChimeVoice).map((oscillator) => oscillator.frequency.value),
+  [900, 1350],
+  "the sparkle note must remain in the requested 600-1200 Hz base range with a harmonic overtone",
+);
+
 engine.setEnabled(false);
 assert.ok(
   scheduledOscillators.every((oscillator) => oscillator.stopped),
